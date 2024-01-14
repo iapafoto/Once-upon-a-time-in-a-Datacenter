@@ -36,7 +36,7 @@ float base(float time) {
         y += 0.4f * v;
     }
     {
-        float t = fract(4.0f * time);//*2.0f);
+        float t = fract(4.0f * time);
         float f = 330.0f * exp(-5.0f * t);
         float a = sin(6.2831f * (f * t * 0.5f + .25f));
         float v = 0.0f;
@@ -51,10 +51,10 @@ float base(float time) {
 
 float mainSound(float time)
 {
-    float y = 0.0f;
-    float s = 1.0f;
-    float o = 0.0f;
-    for (int i = 0; i < 5; i++)
+    float y = 0.0f,
+     s = 1.0f,
+     o = 0.0f;
+  //  for (int i = 0; i < 5; i++)
     {
         y += s * base(time - o);
         s *= 0.5f;

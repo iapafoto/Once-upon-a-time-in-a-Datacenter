@@ -204,7 +204,6 @@
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\fp.h" />
     <ClInclude Include="src\glext.h" />
-    <ClInclude Include="src\4klang.h" />
     <ClInclude Include="src\intro.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\mzk.h" />
@@ -227,9 +226,6 @@
     </None>
     <None Include="src\fragment_shader.inl" />
     <None Include="src\vertex_shader.inl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="src\4klang.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

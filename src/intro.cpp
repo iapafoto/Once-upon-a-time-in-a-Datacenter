@@ -26,9 +26,15 @@ int intro_init(void)
 #ifdef DEBUG
     int		result;
     char    info[1536];
-    oglGetProgramiv(vsid, GL_LINK_STATUS, &result); oglGetProgramInfoLog(vsid, 1024, NULL, (char*)info);  if (!result) DebugBreak();
-    oglGetProgramiv(fsid, GL_LINK_STATUS, &result); oglGetProgramInfoLog(fsid, 1024, NULL, (char*)info); if (!result) DebugBreak();
-    oglGetProgramiv(pid, GL_LINK_STATUS, &result); oglGetProgramInfoLog(pid, 1024, NULL, (char*)info); if (!result) DebugBreak();
+    oglGetProgramiv(vsid, GL_LINK_STATUS, &result); 
+    oglGetProgramInfoLog(vsid, 1024, NULL, (char*)info);  
+    if (!result) DebugBreak();
+    oglGetProgramiv(fsid, GL_LINK_STATUS, &result); 
+    oglGetProgramInfoLog(fsid, 1024, NULL, (char*)info); 
+    if (!result) DebugBreak();
+    oglGetProgramiv(pid, GL_LINK_STATUS, &result); 
+    oglGetProgramInfoLog(pid, 1024, NULL, (char*)info); 
+    if (!result) DebugBreak();
 #endif
 
     return 1;
