@@ -54,7 +54,7 @@ float mainSound(float time)
     float y = 0.0f,
      s = 1.0f,
      o = 0.0f;
-  //  for (int i = 0; i < 5; i++)
+    //for (int i = 0; i < 5; i++) // 4091 - 4128 => 37 octets
     {
         y += s * base(time - o);
         s *= 0.5f;
