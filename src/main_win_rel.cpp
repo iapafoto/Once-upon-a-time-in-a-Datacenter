@@ -2,19 +2,22 @@
 #define WIN32_EXTRA_LEAN
 
 #include <windows.h>
-#include <mmsystem.h>
+#ifndef SOUND_DISABLED
+  #include <mmsystem.h>
+    #include "mzk.h"
+#endif
 #include "intro.h"
-#include "mzk.h"
 #include "main.h"
+#include "config.h"
 
 
-#define CLEANDESTROY
-
+#ifndef SOUND_DISABLED
 static const int wavHeader[11] = {
     0x46464952,  MZK_NUMSAMPLES * 2 + 36,  0x45564157,  0x20746D66,  16,
     WAVE_FORMAT_PCM | (MZK_NUMCHANNELS << 16),  MZK_RATE, MZK_RATE * MZK_NUMCHANNELS * sizeof(short),
     (MZK_NUMCHANNELS * sizeof(short)) | ((8 * sizeof(short)) << 16),  0x61746164,  MZK_NUMSAMPLES * sizeof(short)
 };
+#endif
 
 static const PIXELFORMATDESCRIPTOR pfd = {
     sizeof(PIXELFORMATDESCRIPTOR), 1, PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER, PFD_TYPE_RGBA,
@@ -53,7 +56,9 @@ extern "C"
 }
 #endif
 
+#ifndef SOUND_DISABLED
 static short myMuzik[MZK_NUMSAMPLESC + 22];
+#endif
 
 void* myglfunc[5];
 
@@ -92,10 +97,11 @@ void entrypoint(void)
     if (!intro_init()) return;
 
     // init mzk
+#ifndef SOUND_DISABLED
     mzk_init(myMuzik + 22);
     memcpy(myMuzik, wavHeader, 44);
-    // play mzk
     sndPlaySound((const char*)&myMuzik, SND_ASYNC | SND_MEMORY);
+#endif
 
   //  static WAVEHDR WaveHDR = {
   //  (LPSTR)sointu_buffer, SU_BUFFER_LENGTH * sizeof(SUsample), 0, 0, 0, 0, 0, 0
@@ -116,10 +122,13 @@ void entrypoint(void)
 
 #ifndef DESESPERATE
     #ifdef CLEANDESTROY
-        sndPlaySound(0, 0);
+        #ifndef SOUND_DISABLED
+            sndPlaySound(0, 0);
+        #endif
         ChangeDisplaySettings(0, 0);
         ShowCursor(1);
     #endif
 #endif
+
     ExitProcess(0);
 }

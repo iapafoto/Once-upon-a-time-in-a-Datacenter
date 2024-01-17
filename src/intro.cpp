@@ -3,16 +3,13 @@
 
 //#define DESESPERATE
 
-
 #include <windows.h>
 #include <GL/gl.h>
 #include <windows.h>
 #include <GL/gl.h>
 #include "config.h"
 #include "system.h"
-//#ifndef DESESPERATE
-//    #include "vertex_shader.inl"
-//#endif
+// #include "vertex_shader.inl"
 #include "fragment_shader.inl"
 #include "fp.h"
 
@@ -22,7 +19,7 @@ static int   fsid;
 
 int intro_init(void)
 {
-#ifdef DESESPERATE
+#ifdef DESESPERATE // 1k config but not sure sound is transmited
         ((PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram"))(
         ((PFNGLCREATESHADERPROGRAMVPROC)wglGetProcAddress("glCreateShaderProgramv"))(
             GL_FRAGMENT_SHADER, 1, &fsh));
