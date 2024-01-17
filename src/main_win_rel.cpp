@@ -7,7 +7,8 @@
 #include "mzk.h"
 #include "main.h"
 
-//#define CLEANDESTROY
+
+#define CLEANDESTROY
 
 static const int wavHeader[11] = {
     0x46464952,  MZK_NUMSAMPLES * 2 + 36,  0x45564157,  0x20746D66,  16,
@@ -33,12 +34,15 @@ static DEVMODE screenSettings = { {0},
     #endif
 };
 
+// si vraiment desesperé on doit pouvoir oublier les fct pipeline
+
 static char* glFuncNames[] = {
     "glCreateShaderProgramv",
     "glGenProgramPipelines",
     "glBindProgramPipeline",
     "glUseProgramStages",
     "glProgramUniform1f" };
+
 
 #ifdef __cplusplus
 extern "C"
@@ -50,6 +54,7 @@ extern "C"
 #endif
 
 static short myMuzik[MZK_NUMSAMPLESC + 22];
+
 void* myglfunc[5];
 
 //----------------------------------------------------------------------------
@@ -60,14 +65,20 @@ void entrypoint(void)
 
     // full screen
     if (ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) return;
-    //ShowCursor(0);
+   
     // create window
-    //HWND hWnd = CreateWindow( "static",0,WS_POPUP|WS_VISIBLE,0,0,XRES,YRES,0,0,0,0);
+#ifdef DESESPERATE
+    HDC hDC = GetDC(CreateWindow(".", 0, WS_POPUP | WS_VISIBLE | WS_MAXIMIZE, 0, 0, 0, 0, 0, 0, 0, 0));
+    SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
+#else
+    ShowCursor(0);
     HWND hWnd = CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0);
     if (!hWnd) return;
     HDC hDC = GetDC(hWnd);
-    // initalize opengl
     if (!SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd)) return;
+#endif
+
+    // initalize opengl
     wglMakeCurrent(hDC, wglCreateContext(hDC));
 
     for (int i = 0; i < 5; i++) {
@@ -75,6 +86,7 @@ void entrypoint(void)
         if (!myglfunc[i])
             return;
     }
+
 
     // init intro
     if (!intro_init()) return;
@@ -85,21 +97,29 @@ void entrypoint(void)
     // play mzk
     sndPlaySound((const char*)&myMuzik, SND_ASYNC | SND_MEMORY);
 
+  //  static WAVEHDR WaveHDR = {
+  //  (LPSTR)sointu_buffer, SU_BUFFER_LENGTH * sizeof(SUsample), 0, 0, 0, 0, 0, 0
+  //  };
+  //  static MMTIME MMTime = { TIME_SAMPLES, 0 };
+
     // play intro
     long to = timeGetTime();
-    do
-    {
+    do {
+        // https://github.com/vsariola/adam/blob/main/intro/main.c
+        //   waveOutGetPosition(hWaveOut, &MMTime, sizeof(MMTIME));
+        //  ((PFNGLUNIFORM1FVPROC)wglGetProcAddress("glUniform1fv"))(0, 8, &syncBuf[((MMTime.u.sample + SYNC_DELAY) >> 8) * SU_NUMSYNCS]);
+
         intro_do(timeGetTime() - to);
-        wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); 
-        //SwapBuffers( hDC );
+        wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
 
     } while (!GetAsyncKeyState(VK_ESCAPE));
 
-#ifdef CLEANDESTROY
-    sndPlaySound(0, 0);
-    ChangeDisplaySettings(0, 0);
-    ShowCursor(1);
+#ifndef DESESPERATE
+    #ifdef CLEANDESTROY
+        sndPlaySound(0, 0);
+        ChangeDisplaySettings(0, 0);
+        ShowCursor(1);
+    #endif
 #endif
-
     ExitProcess(0);
 }

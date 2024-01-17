@@ -6,13 +6,36 @@
 #include "mzk.h"
 #include "system.h"
 
+// https://karmafx.net/docs/karmafx_floattricks.pdf
+/*
+__forceinline float my_floor(const float x) {
+    float i = (float)(int)x;
+    return x > 0.f ? i : (i - 1.f);
+   // float r; _asm fld  dword ptr[x];
+   // _asm fsin;
+   // _asm fstp dword ptr[r];
+  //  return r;
+   // 
+}
+*/
+/*
+__forceinline float my_exp(float p) {
+    int _i;
+    float e = 1.44269504f * (float)0x00800000 * (p);
+    _i = (int)e + 0x3F800000;
+    e = *(float*)&_i;
+    return e;
+}
+*/
+
 float clamp(float a, float n, float x) {
     return a < n ? n : a > x ? x : a;
 }
 
 float fract(float a) {
-    return a-(float)floorf(a);
+    return a - floor(a);
 }
+
 
 float base(float time) {
     float y = 0.f;
@@ -68,7 +91,7 @@ void mzk_init(short* buffer)
     for (int i = 0; i < MZK_NUMSAMPLES; i++) {
         const float time = (float)i / (float)MZK_RATE;
         float fl = mainSound(time);
-        buffer[2 * i + 0] = f2i(fl * 32767.0f);
-        buffer[2 * i + 1] = f2i(fl * 32767.0f);
+        buffer[i] = f2i(fl * 32767.f);
+     //   buffer[i*2 + 1] = //f2i(fl * 32767.0f);
     }
 }

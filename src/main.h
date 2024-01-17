@@ -8,4 +8,6 @@
 #define XRES 1280
 #define YRES  720
 
+//#define DESESPERATE   // -39 octets
+
 #endif
