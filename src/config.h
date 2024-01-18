@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#define CLEANDESTROY       // -25 octets si commenté   // destroy stuff (windows, glContext, ...)
+//#define CLEANDESTROY       // -25 octets si commenté   // destroy stuff (windows, glContext, ...)
 #ifdef DEBUG
 #define XRES 1280// 800
 #define YRES 720 //600
