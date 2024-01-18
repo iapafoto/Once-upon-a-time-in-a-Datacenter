@@ -109,16 +109,16 @@ void entrypoint(void)
   //  static MMTIME MMTime = { TIME_SAMPLES, 0 };
 
     // play intro
-    long to = timeGetTime();
+    long t,to = timeGetTime();
     do {
         // https://github.com/vsariola/adam/blob/main/intro/main.c
         //   waveOutGetPosition(hWaveOut, &MMTime, sizeof(MMTIME));
         //  ((PFNGLUNIFORM1FVPROC)wglGetProcAddress("glUniform1fv"))(0, 8, &syncBuf[((MMTime.u.sample + SYNC_DELAY) >> 8) * SU_NUMSYNCS]);
-
-        intro_do(timeGetTime() - to);
+        t = timeGetTime() - to;
+        intro_do(t);
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
 
-    } while (!GetAsyncKeyState(VK_ESCAPE));
+    } while (!GetAsyncKeyState(VK_ESCAPE) && t<140000);
 
 #ifndef DESESPERATE
     #ifdef CLEANDESTROY

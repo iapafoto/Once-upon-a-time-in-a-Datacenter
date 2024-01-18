@@ -3,13 +3,14 @@
 
 #define CLEANDESTROY       // -25 octets si commenté   // destroy stuff (windows, glContext, ...)
 #ifdef DEBUG
-#define XRES 800
-#define YRES 600
+#define XRES 1280// 800
+#define YRES 1024 //600
 #else
 #define XRES 1280
-#define YRES 1024
+#define YRES 720
 #endif
 
+//  Alignement des membres de la structures 1 octet (3964) => default
 
 //#define DESESPERATE   // -39 octets
 

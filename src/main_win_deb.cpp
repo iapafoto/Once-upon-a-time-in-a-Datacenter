@@ -15,6 +15,7 @@
 #include <math.h>
 #include "intro.h"
 #include "mzk.h"
+#include "config.h"
 #include "main.h"
 
 //==============================================================================================
