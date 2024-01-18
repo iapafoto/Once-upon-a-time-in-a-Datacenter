@@ -4,7 +4,7 @@
 #define CLEANDESTROY       // -25 octets si commenté   // destroy stuff (windows, glContext, ...)
 #ifdef DEBUG
 #define XRES 1280// 800
-#define YRES 1024 //600
+#define YRES 720 //600
 #else
 #define XRES 1280
 #define YRES 720
