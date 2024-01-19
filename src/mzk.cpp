@@ -72,26 +72,27 @@ float base(float time) {
 }
 
 
-float mainSound(float time)
-{
-    float y = 0.0f,
-     s = 1.0f,
-     o = 0.0f;
+//float mainSound(float time)
+//{
+  //  float y = 0.0f,
+  //   s = 1.0f,
+  //   o = 0.0f;
     //for (int i = 0; i < 5; i++) // 4091 - 4128 => 37 octets
-    {
-        y += s * base(time - o);
-        s *= 0.5f;
-        o += 0.25f;
-    }
-    return y * 0.15f;
-}
+   // {
+   //     y += s * base(time - o);
+   //     s *= 0.5f;
+   //     o += 0.25f;
+ //   }
+  //  return base(time) * 0.15f;
+//}
 
 void mzk_init(short* buffer)
 {
     for (int i = 0; i < MZK_NUMSAMPLES; i++) {
-        const float time = (float)i / (float)MZK_RATE;
-        float fl = mainSound(time);
-        buffer[i] = f2i(fl * 32767.f);
-     //   buffer[i*2 + 1] = //f2i(fl * 32767.0f);
+      //  const float time = (float)i / (float)MZK_RATE;
+      //  float fl = mainSound(time);
+      //   buffer[i*2 + 1] = //f2i(fl * 32767.0f);
+
+        buffer[i] = f2i(base((float)i / (float)MZK_RATE) * 4915.05f/*.15f * 32767.f*/);
     }
 }

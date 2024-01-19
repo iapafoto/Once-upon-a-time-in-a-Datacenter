@@ -12,7 +12,7 @@
 
 //  Alignement des membres de la structures 1 octet (3964) => default
 
-//#define DESESPERATE   // -39 octets
+#define DESESPERATE   // -39 octets
 
 //#define SOUND_DISABLED // -504 octets
 

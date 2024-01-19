@@ -73,14 +73,16 @@ void entrypoint(void)
    
     // create window
 #ifdef DESESPERATE
-    HDC hDC = GetDC(CreateWindow(".", 0, WS_POPUP | WS_VISIBLE | WS_MAXIMIZE, 0, 0, 0, 0, 0, 0, 0, 0));
+ //   HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE | WS_MAXIMIZE, 0, 0, 0, 0, 0, 0, 0, 0));
+ //   SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
+    HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
     SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
 #else
     ShowCursor(0);
     HWND hWnd = CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0);
     if (!hWnd) return;
-    HDC hDC = GetDC(hWnd);
-    if (!SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd)) return;
+    HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
+    if (SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd)) return;
 #endif
 
     // initalize opengl

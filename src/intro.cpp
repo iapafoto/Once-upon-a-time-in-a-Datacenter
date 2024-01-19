@@ -15,16 +15,17 @@
 
 
 
-static int   fsid;
+static int  fsid;
 
 int intro_init(void)
 {
-#ifdef DESESPERATE // 1k config but not sure sound is transmited
-        ((PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram"))(
-        ((PFNGLCREATESHADERPROGRAMVPROC)wglGetProcAddress("glCreateShaderProgramv"))(
-            GL_FRAGMENT_SHADER, 1, &fsh));
+    
+//#ifdef 0 //DESESPERATE // 1k config but not sure sound is transmited
+//        ((PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram"))(
+//        ((PFNGLCREATESHADERPROGRAMVPROC)wglGetProcAddress("glCreateShaderProgramv"))(
+//            GL_FRAGMENT_SHADER, 1, &fsh));
 
-#else
+//#else
 
  //   int vsid = oglCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vsh);
     fsid = oglCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fsh);
@@ -48,7 +49,7 @@ int intro_init(void)
         if (!result) DebugBreak();
     #endif
 
-#endif
+//#endif
 
     return 1;
 }
