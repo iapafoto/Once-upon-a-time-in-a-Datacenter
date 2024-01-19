@@ -2,13 +2,18 @@
 #define WIN32_EXTRA_LEAN
 
 #include <windows.h>
+#include "config.h"
 #ifndef SOUND_DISABLED
   #include <mmsystem.h>
     #include "mzk.h"
 #endif
-#include "intro.h"
-#include "main.h"
-#include "config.h"
+
+//#include "main.h"
+#include <GL/gl.h>
+//#include <windows.h>
+#include "system.h"
+#include "fragment_shader.inl"
+//#include "fp.h"
 
 
 #ifndef SOUND_DISABLED
@@ -56,68 +61,77 @@ extern "C"
 }
 #endif
 
-#ifndef SOUND_DISABLED
-static short myMuzik[MZK_NUMSAMPLESC + 22];
-#endif
-
-void* myglfunc[5];
 
 //----------------------------------------------------------------------------
+#ifndef SOUND_DISABLED
+static short myMuzik[MZK_NUMSAMPLESC + 22]; // initialise a l'exterieur car entrypoint a une limite de taille de pile
+#endif
 
 void entrypoint(void)
 {
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 
-    // full screen
-    if (ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) return;
-   
+    
+ 
+    // 
     // create window
-#ifdef DESESPERATE
- //   HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE | WS_MAXIMIZE, 0, 0, 0, 0, 0, 0, 0, 0));
- //   SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
+//#ifdef DESESPERATE
+// 4054 mais pas de controle de la definition à l'ecran !
+//    ShowCursor(0); // 5 octet
+//    HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE | WS_MAXIMIZE, 0, 0, 0, 0, 0, 0, 0, 0));
+//  SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
+
+// 4081
+    // 4088 avec show cursor
+    ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN); // 20 octets a peu pres
+    ShowCursor(0); // 5 octets
     HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
     SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
-#else
-    ShowCursor(0);
-    HWND hWnd = CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0);
-    if (!hWnd) return;
-    HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
-    if (SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd)) return;
-#endif
+//#else
+
+// 4100
+ //   // full screen
+ //   if (ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) return;
+ //   ShowCursor(0); // 5 octet
+ //   HWND hWnd = CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0);
+ //   if (!hWnd) return;
+ //   HDC hDC = GetDC(hWnd);
+ //   if (SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd)) return;
+//#endif
 
     // initalize opengl
     wglMakeCurrent(hDC, wglCreateContext(hDC));
 
+    void* myglfunc[5];
     for (int i = 0; i < 5; i++) {
         myglfunc[i] = wglGetProcAddress(glFuncNames[i]);
         if (!myglfunc[i])
             return;
     }
 
+    int fsid = oglCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fsh);
+    unsigned int pid;
+    oglGenProgramPipelines(1, &pid);
+    oglBindProgramPipeline(pid);
+    oglUseProgramStages(pid, GL_FRAGMENT_SHADER_BIT, fsid);
 
-    // init intro
-    if (!intro_init()) return;
 
     // init mzk
+    // si besoin synchro : https://github.com/vsariola/adam/blob/main/intro/main.c
 #ifndef SOUND_DISABLED
     mzk_init(myMuzik + 22);
     memcpy(myMuzik, wavHeader, 44);
     sndPlaySound((const char*)&myMuzik, SND_ASYNC | SND_MEMORY);
-#endif
 
-  //  static WAVEHDR WaveHDR = {
-  //  (LPSTR)sointu_buffer, SU_BUFFER_LENGTH * sizeof(SUsample), 0, 0, 0, 0, 0, 0
-  //  };
-  //  static MMTIME MMTime = { TIME_SAMPLES, 0 };
+#endif
 
     // play intro
     long t,to = timeGetTime();
     do {
-        // https://github.com/vsariola/adam/blob/main/intro/main.c
-        //   waveOutGetPosition(hWaveOut, &MMTime, sizeof(MMTIME));
-        //  ((PFNGLUNIFORM1FVPROC)wglGetProcAddress("glUniform1fv"))(0, 8, &syncBuf[((MMTime.u.sample + SYNC_DELAY) >> 8) * SU_NUMSYNCS]);
         t = timeGetTime() - to;
-        intro_do(t);
+
+        oglProgramUniform1f(fsid, 0, ((float)t) / 1000.f);
+        glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
 
     } while (!GetAsyncKeyState(VK_ESCAPE) && t<140000);
