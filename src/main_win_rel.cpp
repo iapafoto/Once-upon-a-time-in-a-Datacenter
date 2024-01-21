@@ -4,16 +4,13 @@
 #include <windows.h>
 #include "config.h"
 #ifndef SOUND_DISABLED
-  #include <mmsystem.h>
+    #include <mmsystem.h>
     #include "mzk.h"
 #endif
 
-//#include "main.h"
 #include <GL/gl.h>
-//#include <windows.h>
 #include "system.h"
 #include "fragment_shader.inl"
-//#include "fp.h"
 
 
 #ifndef SOUND_DISABLED
@@ -105,8 +102,9 @@ void entrypoint(void)
     void* myglfunc[5];
     for (int i = 0; i < 5; i++) {
         myglfunc[i] = wglGetProcAddress(glFuncNames[i]);
-        if (!myglfunc[i])
-            return;
+#ifndef DESESPERATE
+         if (!myglfunc[i]) return; // -10 octets
+#endif
     }
 
     int fsid = oglCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fsh);

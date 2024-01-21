@@ -5,6 +5,8 @@
 #include <math.h>
 #include "mzk.h"
 #include "system.h"
+#include "fp.h"
+
 
 // https://karmafx.net/docs/karmafx_floattricks.pdf
 /*
