@@ -1,24 +1,15 @@
 
+#version 430
+layout(location = 0) uniform float iTime; layout(location = 0) out vec4 cl;
 
-//clamp((t-a)/(a-b),0.,1.)
-//smoothstep(a,b,t)
-
-//#version 430
-//layout(location=0) uniform float iTime;layout(location=0) out vec4 cl;
-
-#define V(p,x,y,z,e) sdBox(p,vec3(x,y,z),e)
-#define W(p,x,y,z,a,b,c,e) sdBox(p-vec3(x,y,z),vec3(a,b,c),e)
-
-#define iTime ((iMouse.x/iResolution.x)*140.)
-// 50 arrivee robot
-// 60 invaders
-//#define iTime (iTime+70.)
+#define V(p,x,y,z,e) s(p,vec3(x,y,z),e)
+#define W(p,x,y,z,a,b,c,e) s(p-vec3(x,y,z),vec3(a,b,c),e)
 
 float kr = 0.;
 vec3 ph = vec3(0);
 int sh = 0;
 
-float sdBox(vec3 p, vec3 b, float e) {
+float s(vec3 p, vec3 b, float e) {
     b = abs(p) - b;
     return min(max(b.x, max(b.y, b.z)), 0.) + length(max(b, 0.)) - kr * e;
 }
@@ -129,18 +120,18 @@ vec2 sdRobot(vec3 p0, float b) {
     min2(d2, vec2(length(p - vec3(.75, 0, 0)) - .3, 25));
     min2(d2, vec2(length(p - vec3(.3, -.05, .25)) - .3, -1));
 
-    p = p0 + vec3(0, 0, -1.4);
-    p.zy *= rot(.7);
-    p.x = abs(p.x);
-    p0 = p;
+    p0.z -= 1.4;
+    p0.zy *= rot(.7);
+    p0.x = abs(p0.x);
+    p = p0;
     p.yx *= rot(1.26);
 
-    // hand
+    // hand 
     pm = p - vec3(.2, 1.19 - b, -.18);
     pm.yx *= rot(.5);
     d = min(d, V(pm, .15, .05, .1, .05));
     d = min(d, W(pm, -.09, .03, .25, .07, .03, .16, .02));
-    pm.yz *= rot(.5);
+    pm.yz *= rot(.5); // todo posibilite de faire tourner avec kr pour redistribuer les livres, mais il faut mieux centrer les maines sur les bras
     d = min(d, W(pm, .1, .08, .2, .07, .03, .16, .02));
     pm.xy *= rot(.3);
     pm.xz *= rot(1.);
@@ -179,19 +170,17 @@ vec2 sdMap(vec3 p0) {
     float hall = W(p0, 5, 31, 5, 15, 30, 5, 0.), // passage escalier
         x = max(0., iTime - 80.),
         dr = length(p - vec3(0, 2, 0)) - 10. * smoothstep(0., 18., x) - 5.1 * max(0., x - 19.),
-        //        b=smoothstep(75.,80.,iTime);
-        tu = clamp((80. - iTime) / 15., 0., 1.),
-        b = pow(8., -9. * tu) * cos(tu * 3. * 21.) + .1;
-    // demarrage rapide puis rebond
-//float 
+        b = clamp((80. - iTime) / 15., 0., 1.);
+    b = pow(8., -9. * b) * cos(b * 63.) + .1;
 
-    vec2 res0, // ce qui disparait avec kr
+    pl.y = mod(pl.y + 10., 17.5) - 10.;
+
+    vec2 h,
+        res0 = vec2(max(-hall, W(pl, 0, .1, 0, 999, .1, 999, 0.)), 1), // ce qui disparait avec kr
         res = sdRobot(p, b);
 
     kr = smoothstep(-1., 1., dr);
 
-    pl.y = mod(pl.y + 10., 17.5) - 10.;
-    res0 = vec2(max(-hall, W(pl, 0, .1, 0, 999, .1, 999, 0.)), 1);
 
     // mod (10,17.5,10)
 // test lumieres    
@@ -209,7 +198,6 @@ vec2 sdMap(vec3 p0) {
     // poutrelles
     min2(res0, vec2(min(V(p, .45, .5, 3, .05), max(-hall, W(pl, 3. * round(pl.x / 3.), -.5, 0, .17, .45, 999, 0.))), .3));
 
-
     // ladder
     p = p0 - vec3(82, 0, -2.6);
     p.zy *= rot(-.2);
@@ -223,18 +211,18 @@ vec2 sdMap(vec3 p0) {
     p0.z -= round(p0.z * .1) / .1;
     p = p0;
 
-    vec2 d, h = kr * (.2 + .1 * cos(2. * p.xy) + .2 * cos(.3 * p.xy));
+    h = kr * (.2 + .1 * cos(2. * p.xy) + .2 * cos(.3 * p.xy));
     min2(res, vec2(W(p, 0, 15.8, 0, 999, .85 - h.x, .65 - h.x, h.x), .8));
 
     p.z = abs(p.z) - 1.1;
     p.x = mod(p.x + 6., 12.) - 6.;
 
     min2(res, vec2(V(p, .5 - h.y, 100, .5 - h.y, h.y), .5));
-    min2(res, vec2(V(p, .5, .3, .5, .1 + .05 * cos(6. * p.y)), 8.5));
+    min2(res, vec2(V(p, .5, .5, .5, .2 - .2 * p.y), 9.));
     min2(res, vec2(W(p, 0, 16.8, 0, .45, .45, 1e3, .2), .6));
 
     min2(res0, vec2(W(p, 0, 14.7, 0, .7, 0, 0, .05), .3));
-    min2(res0, vec2(W(p, 0, 14.7, -.5, .2, .27, .6, .05), .5));
+    min2(res0, vec2(W(p, 0, 14.7, -.5, .2, .27, .6, .05), .6));
 
     p -= vec3(0, 15.5, 1.7);
     p.zy *= rot(.72);
@@ -244,7 +232,6 @@ vec2 sdMap(vec3 p0) {
     min2(res0, vec2(W(p, 0, 0, 2, .7, 0, 0, .05), .3));
 
     p = p0;
-
     p.z -= 2.5;
     p.x = mod(p.x + 30., 48.) - 11.;
     p.y = mod(p.y + 13., 17.5) - 13.;
@@ -253,6 +240,8 @@ vec2 sdMap(vec3 p0) {
     p.xz = abs(p.xz);
     p.xy *= rot(.1);
     min2(res0, vec2(W(p, 1.6, .6, .6, 0, .7, 0, .1), 4.5)); // pied tabouret
+    res0.x = max(res0.x, -dr);
+    min2(res, res0);
 
     // les allees
     hall = min(hall, W(p0, 18. + 72. * round(p0.x / 72.), 0, 0, 6.01, 999, 999, 0.));
@@ -266,27 +255,21 @@ vec2 sdMap(vec3 p0) {
     float c = floor(p.x),
         iy = floor((p0.y - .5) / 2.5);
 
-    d = vec2(999, 0);
 
     if (kr < .5 || iTime < 85.) {
-        if (sh == 0)
-            d = vec2(p.x - c > .5 ? W(p, c + 11.5, .75, 0, 10.485, .8, .7, 0.) : W(p, c - 10.5, .8, 0, 10.485, .8, .7, 0.), 0);
+        res0 = vec2(sh == 0 ? p.x - c > .5 ? W(p, c + 11.5, .75, 0, 10.485, .8, .7, 0.) : W(p, c - 10.5, .8, 0, 10.485, .8, .7, 0.) : 999., 0);
         p.x -= c;
         for (x = 0.; x <= .98;) {
-            h = vec2(.1 + .9 * (1. - kr), .4) + kr * vec2(.2, .3) * hash22(vec2(x, c + iy));
+            h = vec2(1. - .9 * kr, .4) + kr * vec2(.2, .3) * hash22(vec2(x, c + iy));
             h.x = min(h.x, 1. - x);
             x += h.x;
             if (h.x > .5 * kr * b)
-                book(d, p - vec3(x, 0, 0), h.x, h.y, 2. + hash22(h + c).x);
+                book(res0, p - vec3(x, 0, 0), h.x, h.y, 2. + hash22(h + c).x);
         }
-        d.x = max(d.x, -hall);
-        d.x = kr < .5 ? max(d.x, dr + .5) : d.x;
+        res0.x = max(max(res0.x, -hall), kr < .5 ? dr + .5 : 0.);
+        min2(res, res0);
     }
 
-    res0.x = max(res0.x, -dr);
-
-    min2(res, d);
-    min2(res, res0);
     return res;
 }
 
@@ -325,15 +308,17 @@ vec3 render(vec3 ro, vec3 rd) {
     // Color
     col = .5 + .3 * sin(vec3(.05, .08, .1) * (m - 1.));
 
+    ph = m == 51. || m == 3. ? ph : ro;
+
     col =
         m == .3 ? .15 * texture_wood2(1.5 * ro, 0) :
-        m < .9 ? texture_wood2((m == .8 ? ro.zxy : m == .6 ? ro.yzx : ro) * .75, 1) :
+        m < .9 ? texture_wood2(ro * .75, m == .8 ? 0 : m == .6 ? 2 : 1) :
         m < 1.5 ? .4 + .6 * vec3(texture_wood(ro).x) :
-        m == 51. || m == 50. ? mix(vec3(.01, .3, 1), col, smoothstep(.6, .7, tex3D((m == 50. ? ro : ph) * 2., nor))) :
+        m == 51. || m == 50. ? mix(vec3(.01, .3, 1), col, smoothstep(.6, .7, tex3D(ph * 2., nor))) :
         m == 3. ? col * invader(ph.yz - vec2(.46, .05)) :
         col;
 
-    if (kr > 0.)doBumpMap(nor, 30. * ro);
+    if (kr > 0.) doBumpMap(nor, 30. * ph);
 
     lig = vec3(.27, .6, .58);
 
@@ -355,20 +340,18 @@ vec3 render(vec3 ro, vec3 rd) {
     lig += vec3(.05, .25, .5) * max(0., dot(rd, reflect(vec3(.97, 0, .24), nor)));
 
     // blur far + edge
-   // return lig;
     return mix(mix(.2 + edge * (2. + cos(3. * iTime)) * vec3(.1, 1, 2), col, kr) * lig,
-        mix(1.5 * vec3(1, .6, .5), vec3(.2, .3, .5), kr),/*iTime>99.?0.:1.),*/
+        mix(vec3(1.5, .9, .75), vec3(.2, .3, .5), kr),
         smoothstep(10., 50., t));
 }
 
-//void main() {
-void mainImage(out vec4 cl, vec2 glFragCoord) {
+void main() {
 
-    vec2 R =/*vec2(1280,720)*/ iResolution.xy, q = glFragCoord.xy, p = (q + q - R) / R.y; q /= R;
+    vec2 R = vec2(1280, 720), q = gl_FragCoord.xy, p = (q + q - R) / R.y; q /= R;
 
-    int[18] an = int[18](0, 10, 10, 20, 20, 35, 20, 40, 20, 47, 30, 55, 55, 65, 92, 99, 99, 135);
-    int[30] aro = int[30](95, 8, 80, 95, 6, -7, 112, 15, -5, 92, 16, -7, 94, 15, 4, 10, 10, 5, -10, 24, 4, -23, 24, 9, -4, 25, 7, 165, 1, 4),
-        ata = int[30](90, 4, 30, 80, 5, -7, 111, 9, -12, 90, 15, -5, 92, 14, 5, 0, 8, 5, -16, 21, 5, -20, 21, 5, -10, 22, 5, 159, 5, 9);
+    int[18] an = int[18](0, 10, 10, 20, 20, 35, 20, 40, 20, 47, 30, 55, 55, 65, 92, 99, 99, 130);
+    int[30] aro = int[30](95, 8, 80, 95, 6, -7, 112, 15, -5, 92, 15, -8, 94, 16, 4, 10, 10, 5, -10, 24, 4, -23, 24, 9, -4, 25, 7, 140, 2, 4),
+        ata = int[30](90, 4, 30, 80, 5, -7, 111, 9, -12, 90, 15, -5, 92, 14, 5, 0, 13, 5, -16, 21, 5, -20, 21, 5, -10, 22, 5, 135, 4, 9);
 
     float t;
 
@@ -388,11 +371,11 @@ void mainImage(out vec4 cl, vec2 glFragCoord) {
     rd = mat3(rd, normalize(cross(rd, a)), a) * normalize(vec3(p + (iTime > 99. ? .01 * hash22(p - p + iTime).x : 0.), 2.));
 
     // end anim
-    t = smoothstep(130., 140., iTime);
+    t = smoothstep(125., 132., iTime);
 
-    //   a *= sdBox(col,rd,t);
+    ro *= sdBox(col, rd, t);
     cl = vec4(pow(clamp(mix(
         render(ro, rd),
         vec3(.1, 1, 2), .5 * smoothstep(1., 1.3, fbm(2.5 * p) + t)) * (1. - t), 0., 1.),
-        vec3(.57)) * sqrt(16. * q.x * q.y * (1. - q.x) * (1. - q.y)), 1);
+        vec3(.6)) * 4. * sqrt(q.x * q.y * (1. - q.x) * (1. - q.y)), 1);
 }
