@@ -9,10 +9,10 @@
 #define V(p,x,y,z,e) sdBox(p,vec3(x,y,z),e)
 #define W(p,x,y,z,a,b,c,e) sdBox(p-vec3(x,y,z),vec3(a,b,c),e)
 
-//#define iTime ((iMouse.x/iResolution.x)*140.)
+#define iTime ((iMouse.x/iResolution.x)*140.)
 // 50 arrivee robot
 // 60 invaders
-#define iTime (iTime+70.)
+//#define iTime (iTime+70.)
 
 float kr = 0.;
 vec3 ph = vec3(0);
@@ -46,9 +46,9 @@ float tex3D(vec3 p, vec3 n) {
     return fbm(p.yz) * n.x + fbm(p.zx) * n.y + fbm(p.xy) * n.z;
 }
 
-vec3 doBumpMap(vec3 p, vec3 n, float b) {
+void doBumpMap(inout vec3 n, vec3 p) {
     p = (vec3(tex3D(vec3(p.x - .001, p.yz), n), tex3D(vec3(p.x, p.y - .001, p.z), n), tex3D(vec3(p.xy, p.z - .001), n)) - tex3D(p, n)) / .002;
-    return normalize(n + (p - n * dot(n, p)) * b);
+    n = normalize(n + (p - n * dot(n, p)) * .2);
 }
 
 mat2 rot(float a) {
@@ -56,10 +56,9 @@ mat2 rot(float a) {
     return mat2(ca, sa, -sa, ca);
 }
 
-vec3 texture_wood2(vec3 p, int i) {
-    p[i] *= .1;
-    vec3 p0 = p;
-    p = sin(p * 4.3 + cos(p.yzx * 6.7));
+vec3 texture_wood2(vec3 p0, int i) {
+    p0[i] *= .1;
+    vec3 p = sin(p0 * 4.3 + cos(p0.yzx * 6.7));
     float n = dot(p + sin(p * 13.) * .03, vec3(3)), g = 1. - abs(dot(sin(p0 * 120.5 + n * 6.283 + sin(p0.zxy * 121.3)), vec3(.333)));
     n = fract(n + fract(n * 4.) * .1);
     n = min(min(n, n * (1. - n) * 6.) * .85 + g * .2, 1.);
@@ -83,7 +82,8 @@ float invader(vec2 v) {
     return abs(x.x) < 33 && abs(x.y + 2) < 53 && (219 * (m.y > 4 ? 614081 : 4840434) & 1 << abs((m.x + 86) % 13 - 7) - m.y * 8) > 0 ? 1. : 1.5;
 }
 
-vec2 sdBezier(vec3 p, vec3 b0, vec3 b1, vec3 b2) {
+//8496
+void sdBezier(inout vec2 r, vec3 p, vec3 b0, vec3 b1, vec3 b2) {
     b0 -= p;
     b1 -= p;
     b2 -= p;
@@ -94,9 +94,8 @@ vec2 sdBezier(vec3 p, vec3 b0, vec3 b1, vec3 b2) {
         d = -dot(b12, n);
     p = (d - b) * b1 + (b - a * .5) * b2 - (d - a * .5) * b0;
     a = clamp((b - .5 * (a * a * .25 - b * d) * dot(p, b0 - 2. * b1 + b2) / dot(p, p) - a * .5) / -dot(n, n), 0., 1.);
-    return vec2(length(mix(mix(b0, b1, a), mix(b1, b2, a), a)) - .08, cos(60. * a) > .6 ? 50 : 25);
+    min2(r, vec2(length(mix(mix(b0, b1, a), mix(b1, b2, a), a)) - .08, cos(60. * a) > .6 ? 50 : 25));
 }
-
 
 
 vec2 sdRobot(vec3 p0, float b) {
@@ -107,15 +106,16 @@ vec2 sdRobot(vec3 p0, float b) {
     d = V(p, .3, .6, .2, .1 + .1 * p.y);
 
     // cou
-    vec2 d2 = sdBezier(p, vec3(0, .6, 0), vec3(0, 1.1, -.4), vec3(0, 1.6, .2));
+    vec2 d2 = vec2(999);
+    sdBezier(d2, p, vec3(0, .6, 0), vec3(0, 1.1, -.4), vec3(0, 1.6, .2));
 
     p.x = abs(p.x);
     p.zx *= rot(.2); // rot d'ensemble du robot (symetrie + rot)
     d = min(d, W(p, .4, -1.8, 1.3, .2, .12, .4, 0.));
 
     // Les bras les jambes  
-    min2(d2, sdBezier(p, vec3(.2, -.6, 0), vec3(.6, -.3, 1.5), vec3(.4, -1.8, 1)));
-    min2(d2, sdBezier(p, vec3(.3 + .2 * kr, .6, 0), vec3(1. - .2 * b, -.8, -.2), vec3(.95 - .95 * b, -.07 - .1 * b, 1.3)));
+    sdBezier(d2, p, vec3(.2, -.6, 0), vec3(.6, -.3, 1.5), vec3(.4, -1.8, 1));
+    sdBezier(d2, p, vec3(.3 + .2 * kr, .6, 0), vec3(1. - .2 * b, -.8, -.2), vec3(.95 - .95 * b, -.07 - .1 * b, 1.3));
     // hashures sur les bras !!!
 
     p = p0 - vec3(0, 1.9, .5);
@@ -160,16 +160,14 @@ vec2 sdRobot(vec3 p0, float b) {
 }
 
 // bump bordure des livres 1.-cos(max(0,cos(x)))
-vec2 book(vec3 p, float w, float h, float c) {
+void book(inout vec2 r, vec3 p, float w, float h, float c) {
     p -= vec3(-w * .5, h + .07, 0);
     w = w * .5 - .015;
     p.x = abs(p.x);
     float d = W(p, w, 0, 0, 0, h, h * .7, .01);
     p.z -= kr * .03 * cos(p.x / w) + .01;  // bombé
-    vec2 res = vec2(999);
-    min2(res, vec2(W(p, 0, 0, .015, w, h * .95 + .002 * cos(6e2 * p.x), h * .65, .0), 15));
-    min2(res, vec2(min(d, W(p, 0, 0, h * .7 + .01 - .02 * (.3 + cos(2. * max(.9, cos(14. * p.y / h)))), w - .015, h, 0, .015)), c * c * c * c)); // pages
-    return res;
+    min2(r, vec2(W(p, 0, 0, .015, w, h * .95 + .002 * cos(6e2 * p.x), h * .65, .0), 15));
+    min2(r, vec2(min(d, W(p, 0, 0, h * .7 + .01 - .02 * (.3 + cos(2. * max(.9, cos(14. * p.y / h)))), w - .015, h, 0, .015)), c * c * c * c)); // pages
 }
 
 
@@ -279,7 +277,7 @@ vec2 sdMap(vec3 p0) {
             h.x = min(h.x, 1. - x);
             x += h.x;
             if (h.x > .5 * kr * b)
-                min2(d, book(p - vec3(x, 0, 0), h.x, h.y, 2. + hash22(h + c).x));
+                book(d, p - vec3(x, 0, 0), h.x, h.y, 2. + hash22(h + c).x);
         }
         d.x = max(d.x, -hall);
         d.x = kr < .5 ? max(d.x, dr + .5) : d.x;
@@ -294,7 +292,7 @@ vec2 sdMap(vec3 p0) {
 
 
 vec3 render(vec3 ro, vec3 rd) {
-    float ao = 0., sha = 1., edge, m, t = .2 * hash22(rd.xy + 912. * rd.z).x, tt = .01, b = .7;
+    float ao = 1., sha = 1., edge, m, t = .2 * hash22(rd.xy + 912. * rd.z).x, tt = .01;
 
     vec2 res;
     for (int i = 0; ++i < 128/*&&res.x>1e-4*t&&t<50.*/;) {
@@ -331,53 +329,46 @@ vec3 render(vec3 ro, vec3 rd) {
         m == .3 ? .15 * texture_wood2(1.5 * ro, 0) :
         m < .9 ? texture_wood2((m == .8 ? ro.zxy : m == .6 ? ro.yzx : ro) * .75, 1) :
         m < 1.5 ? .4 + .6 * vec3(texture_wood(ro).x) :
-        m == 51. || m == 50. ? mix(vec3(.01, .3, 1), col, b = smoothstep(.6, .7, tex3D((m == 50. ? ro : ph) * 2., nor))) :
+        m == 51. || m == 50. ? mix(vec3(.01, .3, 1), col, smoothstep(.6, .7, tex3D((m == 50. ? ro : ph) * 2., nor))) :
         m == 3. ? col * invader(ph.yz - vec2(.46, .05)) :
         col;
 
-    nor = kr > 0. ? doBumpMap(30. * ro, nor, kr * b * .2) : nor;
+    if (kr > 0.)doBumpMap(nor, 30. * ro);
 
-    lig = normalize(vec3(.347, .78, .752)),
+    lig = vec3(.27, .6, .58);
 
-        sh = 1; // global avoid shadow artfacts
+    sh = 1; // global avoid shadow artfacts
 
-        // shadow
+    // shadow
     for (int i = 0; ++i < 28 && m>.001 && tt < 2.5;)
         m = sdMap(ro + lig * tt).x,
         sha = min(sha, 2. * m / tt),
         tt += clamp(m, .02, .1);
 
     // ambiant occlusion
-    tt = 1.05;
-    for (int i = 0; ++i < 5; i)
-        m = .02 + .06 * float(i),
-        m -= sdMap(ro + nor * m).x,
-        ao += m * (tt *= .95);
+    tt = 1.05; for (float m = .02; m < .32; m += .06)ao -= (m - sdMap(ro + nor * m).x) * (tt *= .95);
 
     // shading
-    lig = .1 + (.5 * clamp(1. - ao, 0., 1.) + .5) * dot(nor, lig) * clamp(sha, 0., 1.) * vec3(1.3, 1., .6) +
+    lig = .1 + (.5 * clamp(ao, 0., 1.) + .5) * dot(nor, lig) * clamp(sha, 0., 1.) * vec3(1.3, 1., .6) +
         4. * pow(clamp(dot(ref, lig), 0., 1.), 46.) * vec3(1, .9, .7) +
         .25 * pow(clamp(1. + dot(nor, rd), 0., 1.), 2.);
-    lig += vec3(.05, .25, .5) * max(0., dot(rd, reflect(normalize(vec3(.8, 0, .2)), nor)));
+    lig += vec3(.05, .25, .5) * max(0., dot(rd, reflect(vec3(.97, 0, .24), nor)));
 
-    //  return mix(.1*vec3(.3,.2,.1),mix(((clamp(sha*(1.-ao),0.,1.)+.3)*col),
-  //			          vec3(pow(max(dot(reflect(lig,nor),rd),0.),46.)),.4),dot(nor,-rd));
-  //return vec3(clamp(sha,0.,1.));
-      // blur far + edge
-     // return lig;
+    // blur far + edge
+   // return lig;
     return mix(mix(.2 + edge * (2. + cos(3. * iTime)) * vec3(.1, 1, 2), col, kr) * lig,
         mix(1.5 * vec3(1, .6, .5), vec3(.2, .3, .5), kr),/*iTime>99.?0.:1.),*/
         smoothstep(10., 50., t));
 }
 
-void mainImage(out vec4 cl, vec2 fragCoord) {
+//void main() {
+void mainImage(out vec4 cl, vec2 glFragCoord) {
 
-    vec2 R =/*vec2(1280,720)*/ iResolution.xy, q = fragCoord.xy, p = (q + q - R) / R.y; q /= R;
+    vec2 R =/*vec2(1280,720)*/ iResolution.xy, q = glFragCoord.xy, p = (q + q - R) / R.y; q /= R;
 
-    //void main() {
     int[18] an = int[18](0, 10, 10, 20, 20, 35, 20, 40, 20, 47, 30, 55, 55, 65, 92, 99, 99, 135);
-    int[30] aro = int[30](95, 8, 80, 92, 4, -5, 112, 16, -2, 92, 16, -7, 94, 15, 4, 10, 10, 5, -10, 24, 4, -23, 24, 9, -4, 25, 7, 165, 1, 4),
-        ata = int[30](90, 4, 30, 80, 5, -7, 111, 9, -12, 90, 15, -5, 92, 14, 5, 0, 8, 5, -16, 21, 5, -20, 21, 5, -10, 22, 5, 159, 5, 8);
+    int[30] aro = int[30](95, 8, 80, 95, 6, -7, 112, 15, -5, 92, 16, -7, 94, 15, 4, 10, 10, 5, -10, 24, 4, -23, 24, 9, -4, 25, 7, 165, 1, 4),
+        ata = int[30](90, 4, 30, 80, 5, -7, 111, 9, -12, 90, 15, -5, 92, 14, 5, 0, 8, 5, -16, 21, 5, -20, 21, 5, -10, 22, 5, 159, 5, 9);
 
     float t;
 
