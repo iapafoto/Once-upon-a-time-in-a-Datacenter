@@ -132,7 +132,7 @@ void entrypoint(void)
         glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
 
-    } while (!GetAsyncKeyState(VK_ESCAPE) && t<140000);
+    } while (!GetAsyncKeyState(VK_ESCAPE) && t<132000);
 
 #ifndef DESESPERATE
     #ifdef CLEANDESTROY
