@@ -38,6 +38,51 @@ float fract(float a) {
     return a - floor(a);
 }
 
+// Implements fract(s/n)
+  // Explanation and copyright: shadertoy.com/view/4ltfRN
+  // Given sample number and period, calculate phase with high accuracy.
+  // Uses integer overflow for modulo.
+/*
+float intfract(int s, float n)
+{
+    //Explanation and copyright : shadertoy.com/view/4ltfRN
+    int sn = int(n), a = s % sn, b = (s / sn);
+    const float MAXF = float(uint(-1)) + 1.;
+    return fract((float(a) / n) + float((uint(b) * uint(MAXF * float(sn) / n))) / MAXF);
+}
+*/
+
+/*
+float melody(float t) {
+
+        // Prelude and Fugue No. 1 in C major, BWV 846
+    const char n[112] = { 60, 64, 67, 72, 76, 67, 72, 76, 60, 64,
+                          67, 72, 76, 67, 72, 76, 60, 62, 69, 74,
+                          77, 69, 74, 77, 60, 62, 69, 74, 77, 69 };/*,
+                            74, 77, 59, 62, 67, 74, 77, 67, 74, 77,
+                            59, 62, 67, 74, 77, 67, 74, 77, 60, 64,
+                            67, 72, 76, 67, 72, 76, 60, 64, 67, 72,
+                            76, 67, 72, 76, 60, 64, 69, 76, 81, 69,
+                            76, 81, 60, 64, 69, 76, 81, 69, 76, 81,
+                            60, 62, 66, 69, 74, 66, 69, 74, 60, 62,
+                            66, 69, 74, 66, 69, 74, 59, 62, 67, 74,
+                            79, 67, 74, 79, 59, 62, 67, 74, 79, 67,
+                            74, 79 };
+*/
+ /*     //  int t = samp / int(.2 * iSampleRate);
+    const char n[112] = { 60, 64, 67, 72, 76, 67, 72, 76, 60, 64,
+                        67, 72, 76, 67, 72, 76, 60, 62, 69, 74,
+                        77, 69, 74, 77, 60, 62, 69, 74, 77, 69 };/*,
+    float f, p;
+    //4250
+    f = 440.f * powf(2.f, float(n[f2i(t) % 112] - 69.f) / 12.f); //*/ 
+/*exp(.30102999566f * float(n[f2i(t) % 112] - 69.f) / 12.f);// exp2f(float(n[f2i(t) % 112] - 69.f) / 12.f);
+        f = floor(.2f * f) / .2f;
+        p = sin(6.283185f * f*t);
+
+        return p * .501f;
+}
+*/
 
 float base(float time) {
     float y = 0.f;
@@ -94,7 +139,7 @@ void mzk_init(short* buffer)
       //  const float time = (float)i / (float)MZK_RATE;
       //  float fl = mainSound(time);
       //   buffer[i*2 + 1] = //f2i(fl * 32767.0f);
-
-        buffer[i] = f2i(base((float)i / (float)MZK_RATE) * 4915.05f/*.15f * 32767.f*/);
+        float t = (float)i / (float)MZK_RATE;
+        buffer[i] =  f2i(/*.3f * (melody(2.f * t) + */.15f * base(t) * 32767.f);
     }
 }
