@@ -30,7 +30,7 @@ float smoothstep(float e0, float e1, float x) {
 
 float beat(float time) {
     float t = fract(time);
-    float f = 220.0f * exp(-5.f * t);
+    float f = 220.f * exp(-5.f * t);
     float a = sin(3.141592f * f * t);
     float v = clamp(a * 8.f, -1.f, 1.f) * (exp(-10.f * t) + exp(-t));
     v += a * 8.f * exp(-t);
