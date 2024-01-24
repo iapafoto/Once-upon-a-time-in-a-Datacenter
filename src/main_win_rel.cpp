@@ -107,7 +107,7 @@ void entrypoint(void)
 #endif
     }
 
-    int fsid = oglCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fsh);
+    int fsid = oglCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &input);
     unsigned int pid;
     oglGenProgramPipelines(1, &pid);
     oglBindProgramPipeline(pid);

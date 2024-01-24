@@ -28,7 +28,7 @@ int intro_init(void)
 //#else
 
  //   int vsid = oglCreateShaderProgramv(GL_VERTEX_SHADER, 1, &vsh);
-    fsid = oglCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &fsh);
+    fsid = oglCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &input);
     unsigned int pid;
     oglGenProgramPipelines(1, &pid);
     oglBindProgramPipeline(pid);
@@ -43,7 +43,8 @@ int intro_init(void)
       // if (!result) DebugBreak();
         oglGetProgramiv(fsid, GL_LINK_STATUS, &result); 
         oglGetProgramInfoLog(fsid, 1024, NULL, (char*)info); 
-        if (!result) DebugBreak();
+        if (!result) 
+            DebugBreak();
         oglGetProgramiv(pid, GL_LINK_STATUS, &result); 
         oglGetProgramInfoLog(pid, 1024, NULL, (char*)info); 
         if (!result) DebugBreak();
