@@ -1,10 +1,7 @@
 // Generated with Shader Minifier 1.3.6 (https://github.com/laurentlb/Shader_Minifier/)
 #ifndef SHADER_CODE_H_
 # define SHADER_CODE_H_
-# define VAR_cl "f"
-# define VAR_iTime "v"
 
-// 4036
 const char* input =
 "#version 430\n"
 "layout(location=0) uniform float v;"
@@ -42,7 +39,8 @@ const char* input =
 "}"
 "float n(vec3 v,vec3 m,int x)"
 "{"
-"if(x<3)v[x]+=.001;"
+"if(x<3)"
+"v[x]-=.001;"
 "m=max(m*m,.001);"
 "m/=m.x+m.y+m.z;"
 "return n(v.yz)*m.x+n(v.zx)*m.y+n(v.xy)*m.z;"
@@ -239,7 +237,7 @@ const char* input =
 "{"
 "float a=1.,i,l,b=.2*s(z.xy+912.*z.z).x,e=.01;"
 "vec2 t;"
-"for(int o=0;++o<128;)"
+"for(int o=0;++o<200;)"
 "{"
 "t=c(f+z*b);"
 "if(t.x<b/1e4||b>50.)"
@@ -286,7 +284,8 @@ const char* input =
 "vec2 m=vec2(1280,720),z=gl_FragCoord.xy,y=(z+z-m)/m.y;"
 "z/=m;"
 "int[18] x=int[18](0,10,10,20,20,35,20,40,20,47,30,55,55,65,92,99,99,130);"
-"int[30] l=int[30](95,8,80,95,6,-7,112,15,-5,92,15,-8,94,16,4,10,10,5,-10,24,4,-23,24,9,-4,25,7,140,2,4),i=int[30](90,4,30,80,5,-7,111,9,-12,90,15,-5,92,14,5,0,13,5,-16,21,5,-20,21,5,-10,22,5,135,4,9);"
+"int[30] l=int[30](95,8,80,95,6,-7,112,15,-5,92,15,-8,94,17,2,8,5,8,-10,24,4,-23,24,9,-4,25,7,140,4,4),"
+"i=int[30](80,6,28,80,5,-7,111,9,-12,90,15,-5,92,17,8,0,9,5,-16,21,5,-20,21,5,-10,22,5,135,3,9);"
 "float r;"
 "vec3 a,b=vec3(l[0],l[1],l[2]),e=vec3(i[0],i[1],i[2]);"
 "for(int u=0;u<9;u++)"
@@ -298,7 +297,6 @@ const char* input =
 ".01*s(y-y+v).x:"
 "0.),2));"
 "r=smoothstep(125.,132.,v);"
-//"f.xyz=s(b,e,r);"
 "f=vec4(pow(clamp(mix(c(b,e),vec3(.1,1,2),.5*smoothstep(1.,1.3,n(2.5*y)+r))*(1.-r),0.,1.),vec3(.6))*4.*sqrt(z.x*z.y*(1.-z.x)*(1.-z.y)),1);"
 "}";
 

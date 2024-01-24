@@ -19,7 +19,7 @@ float hash(float x) {
     return fract(sin(x * 43758.54f) );
 }
 
-float clamp(float a, float n/*, float x*/) {
+float clamp(float a, float n/*, float x*/) {  //clamp(a,n,1)
     return a < n ? n : a > 1.f ? 1.f : a;
 }
 
