@@ -13,9 +13,7 @@ float sdBox(vec3 p,vec3 b,float e) {
   b=abs(p)-b;
   return min(max(b.x,max(b.y,b.z)),0.)+length(max(b,0.))-kr*e;
 }
-float sdBox(mat3 pmb,float e) {
-  return sdBox(pmb[0]-pmb[1],pmb[2],e);
-}
+
 void min2(inout vec2 a,vec2 b) {
   a=a.x<b.x?a:b;
 }
@@ -102,7 +100,7 @@ vec2 sdRobot(vec3 p0,float b)
   sdBezier(d2,p,vec3(0,.6,0),vec3(0,1.1,-.4),vec3(0,1.6,.2));
   p.x=abs(p.x);
   p.zx*=rot(.2);
-  d=min(d,sdBox(mat3(p,.4,-1.8,1.3,.2,.12,.4),0.));
+  d=min(d,sdBox(p-vec3(.4,-1.8,1.3),vec3(.2,.12,.4),0.));
   sdBezier(d2,p,vec3(.2,-.6,0),vec3(.6,-.3,1.5),vec3(.4,-1.8,1));
   sdBezier(d2,p,vec3(.3+.2*kr,.6,0),vec3(1.-.2*b,-.8,-.2),vec3(.95-.95*b,-.07-.1*b,1.3));
   p=p0-vec3(0,1.9,.5);
@@ -113,7 +111,8 @@ vec2 sdRobot(vec3 p0,float b)
   min2(d2,vec2(sdBox(p,vec3(.9,.6,.5),0.),4));
   p.x=abs(p.x);
   min2(d2,vec2(length(p-vec3(.75,0,0))-.3,25));
-  min2(d2,vec2(length(p-vec3(.3,-.05,.25))-.3,-1));
+  min2(d2,vec2(length(p-vec3(.3,-.05,.25))-.3,-1.-b) // changment de la couleur des yeux
+      );
   p0.z-=1.4;
   p0.zy*=rot(.7);
   p0.x=abs(p0.x);
@@ -122,21 +121,21 @@ vec2 sdRobot(vec3 p0,float b)
   pm=p-vec3(.2,1.19-b,-.18);
   pm.yx*=rot(.5);
   d=min(d,sdBox(pm,vec3(.15,.05,.1),.05));
-  d=min(d,sdBox(mat3(pm,-.09,.03,.25,.07,.03,.16),.02));
+  d=min(d,sdBox(pm-vec3(-.09,.03,.25),vec3(.07,.03,.16),.02));
   pm.yz*=rot(.5);
-  d=min(d,sdBox(mat3(pm,.1,.08,.2,.07,.03,.16),.02));
+  d=min(d,sdBox(pm-vec3(.1,.08,.2),vec3(.07,.03,.16),.02));
   pm.xy*=rot(.3);
   pm.xz*=rot(1.);
-  d=min(d,sdBox(mat3(pm,-.16,.05,.2,.06,.04,.12),.02));
+  d=min(d,sdBox(pm-vec3(-.16,.05,.2),vec3(.06,.04,.12),.02));
   min2(d2,vec2(d,5));
   if(iTime<67.&&sh==0) {
-      k2=sdBox(mat3(p0,0,-.1-.03*cos(9.*p0.x),0,.2,.018,.8),.01);
+      k2=sdBox(p0-vec3(0,-.1-.03*cos(9.*p0.x),0),vec3(.2,.018,.8),.01);
       if(p00.y<.8)
         ph=p;
-      k2=min(k2,sdBox(mat3(p,.12,.5+p.x*1.256,0,0,.5,.8),.018));
+      k2=min(k2,sdBox(p-vec3(.12,.5+p.x*1.256,0),vec3(0,.5,.8),.018));
       p.y-=.5+p.x*1.256;
       min2(d2,vec2(k2,48));
-      min2(d2,vec2(.8*sdBox(mat3(p,.01+sin(p.y*6.9+5.7)*.027/(1.+p.y),0,0,.06,.48,.78),0.),7));
+      min2(d2,vec2(.8*sdBox(p-vec3(.01+sin(p.y*6.9+5.7)*.027/(1.+p.y),0,0),vec3(.06,.48,.78),0.),7));
   }
   return d2;
 }
@@ -145,23 +144,23 @@ void sdBook(inout vec2 r,vec3 p,float w,float h,float c) {
   p-=vec3(-w*.5,h+.07,0);
   w=w*.5-.015;
   p.x=abs(p.x);
-  float d=sdBox(mat3(p,w,0,0,0,h,h*.7),.01);
+  float d=sdBox(p-vec3(w,0,0),vec3(0,h,h*.7),.01);
   p.z-=kr*.04*cos(p.x/w)-.019;
-  min2(r,vec2(sdBox(mat3(p,0,0,.015,w,h*.95+.002*cos(6e2*p.x),h*.65),0.),15));
-  min2(r,vec2(min(d,sdBox(mat3(p,0,0,h*.7+.01-.02*(.3+cos(2.*max(.9,cos(14.*p.y/h)))),w-.015,h,0),.015)),c*c*c*c));
+  min2(r,vec2(sdBox(p-vec3(0,0,.015),vec3(w,h*.95+.002*cos(6e2*p.x),h*.65),0.),15));
+  min2(r,vec2(min(d,sdBox(p-vec3(0,0,h*.7+.01-.02*(.3+cos(2.*max(.9,cos(14.*p.y/h))))),vec3(w-.015,h,0),.015)),c*c*c*c)); 
 }
 
 vec2 sdMap(vec3 p0) {
   vec3 pl=p0,p=p0-vec3(-20,19.65,3);
   p.xz*=rot(.4);
-  float c,hall=sdBox(mat3(p0,5,31,5,15,30,5),0.),
+  float c,hall=sdBox(p0-vec3(5,31,5),vec3(15,30,5),0.),
       x=max(0.,iTime-80.),
       dr=length(p-vec3(0,2,0))-10.*smoothstep(0.,18.,x)-5.1*max(0.,x-19.),
       b=clamp((80.-iTime)/15.,0.,1.);
   b=pow(9.,-15.*b)*cos(b*30.);
   pl.y=mod(pl.y+10.,17.5)-10.;
   vec2 h,
-      res0=vec2(max(-hall,sdBox(mat3(pl,0,.1,0,999,.1,999),0.)),3),
+      res0=vec2(max(-hall,sdBox(pl-vec3(0,.1,0),vec3(999,.1,999),0.)),3),
       res=sdRobot(p,b);
   kr=smoothstep(-1.,1.,dr);
   p=p0-vec3(6.7,0,5);
@@ -169,13 +168,13 @@ vec2 sdMap(vec3 p0) {
   p.z=abs(p.z);
   p.y-=clamp(round(p.y),0.,24.);
   p.yx*=rot(.785);
-  min2(res0,vec2(min(sdBox(p,vec3(.45,.5,3),.05),max(-hall,sdBox(mat3(pl,3.*round(pl.x/3.),-.5,0,.17,.45,999),0.))),2.3));
+  min2(res0,vec2(min(sdBox(p,vec3(.45,.5,3),.05),max(-hall,sdBox(pl-vec3(3.*round(pl.x/3.),-.5,0),vec3(.17,.45,999),0.))),2.3));
   p=p0-vec3(82,0,-2.6);
   p.zy*=rot(-.2);
   p.x=abs(p.x);
-  min2(res0,vec2(min(sdBox(mat3(p,0,clamp(round(p.y),0.,8.),0,.75,0,0),.04),
-  sdBox(mat3(p,.75,4.6,0,.05,4.4,.1),0.)),.3));
-  hall=sdBox(mat3(p0,0,15.25,0,999,2.2,999),0.);
+  min2(res0,vec2(min(sdBox(p-vec3(0,clamp(round(p.y),0.,8.),0),vec3(.75,0,0),.04),
+  sdBox(p-vec3(.75,4.6,0),vec3(.05,4.4,.1),0.)),.3));
+  hall=sdBox(p0-vec3(0,15.25,0),vec3(999,2.2,999),0.);
   
   pl=p0;
   pl.y=pl.y/.25+1.;pl=round(pl*.1);
@@ -184,32 +183,32 @@ vec2 sdMap(vec3 p0) {
   
   p=p0;
   h=kr*(.2+.1*cos(2.*p.xy)+.2*cos(.3*p.xy));
-  min2(res,vec2(sdBox(mat3(p,0,15.8,0,999,.85-h.x,.65-h.x),h.x),.99));
+  min2(res,vec2(sdBox(p-vec3(0,15.8,0),vec3(999,.85-h.x,.65-h.x),h.x),.99));
   p.z=abs(p.z)-1.1;
   p.x=mod(p.x+6.,12.)-6.;
   min2(res,vec2(sdBox(p,vec3(.5),.2-.2*p.y),9));
   min2(res,vec2(sdBox(p,vec3(.5-h.y,100,.5-h.y),h.y),1));
-  min2(res,vec2(sdBox(mat3(p,0,16.8,0,.45,.45,1e3),.2),2));
-  min2(res0,vec2(sdBox(mat3(p,0,14.7,0,.6,0,0),.05),1.5));
-  min2(res0,vec2(sdBox(mat3(p,0,14.7,-.5,.2,.27,.6),.05),2));
+  min2(res,vec2(sdBox(p-vec3(0,16.8,0),vec3(.45,.45,1e3),.2),2));
+  min2(res0,vec2(sdBox(p-vec3(0,14.7,0),vec3(.6,0,0),.05),1.5));
+  min2(res0,vec2(sdBox(p-vec3(0,14.7,-.5),vec3(.2,.27,.6),.05),2));
   p-=vec3(0,15.5,1.7);
  
   p.yz*=rot(-.72);
   min2(res0,vec2(sdBox(p,vec3(.17,.2,2.5),.1),1));
   p.z=abs(p.z);
-  min2(res0,vec2(sdBox(mat3(p,0,0,2,.7,0,0),.05),1.5));
+  min2(res0,vec2(sdBox(p-vec3(0,0,2),vec3(.7,0,0),.05),1.5));
   
   p=p0;
   p.z-=2.5;
   p.x=mod(p.x+30.,48.)-11.;
   p.y=mod(p.y+13.,17.5)-13.;
-  min2(res,vec2(sdBox(mat3(p,0,1.4,0,2.4,0,.8),.1),.15));
+  min2(res,vec2(sdBox(p-vec3(0,1.4,0),vec3(2.4,0,.8),.1),.15));
   p.xz=abs(p.xz);
   p.xy*=rot(.1);
-  min2(res0,vec2(sdBox(mat3(p,1.6,.6,.6,0,.7,0),.1),8));
+  min2(res0,vec2(sdBox(p-vec3(1.6,.6,.6),vec3(0,.7,0),.1),8));
   res0.x=max(res0.x,-dr);
   min2(res,res0);
-  hall=min(hall,sdBox(mat3(p0,18.+72.*round(p0.x/72.),0,0,6.01,999,999),0.)); // couloir en travers
+  hall=min(hall,sdBox(p0-vec3(18.+72.*round(p0.x/72.),0,0),vec3(6.01,999,999),0.)); // couloir en travers
   
   p=p0;
   p.y=mod(p.y+.27,2.5)-1.25;
@@ -220,8 +219,8 @@ vec2 sdMap(vec3 p0) {
     {
       res0=vec2(sh==0?
         p.x-c>.5?
-          sdBox(mat3(p,c+11.5,.75,0,10.48,.8,.7),0.):
-          sdBox(mat3(p,c-10.5,.8,0,10.48,.8,.7),0.):
+          sdBox(p-vec3(c+11.5,.75,0),vec3(10.48,.8,.7),0.):
+          sdBox(p-vec3(c-10.5,.8,0),vec3(10.48,.8,.7),0.):
         999.,0);
       p.x-=c;
       for(x=.02;x<=.97;)
@@ -240,16 +239,16 @@ vec2 sdMap(vec3 p0) {
 
 vec3 render(vec3 ro,vec3 rd) {
   float sha=1.,edge,m,t=.2*hash22(rd.xy+912.*rd.z).x,tt=.01;
-  vec2 res;
-  for(int i=0;++i<200;) {
+  vec2 res=vec2(999);
+  for(int i=0;++i<200&&res.x>t/1e4&&t<50.;) {
       res=sdMap(ro+rd*t);
-      if(res.x<t/1e4||t>50.)
-        break;
       t+=.9*res.x;
     }
   m=res.y;
-  if(m<-.5)
-    return vec3(.7,.9,1);
+  if(m<.0) { // couleur des yeux
+    return vec3(.7,.9,1)*(m<-1.2&&m>-2.?hash22(vec2(m)).x-.5:1.);
+  }
+  
   ro+=t*rd;
   vec3 ref=vec3(0,max(1e-4*t,.03-kr*.02),0),
       lig=vec3(sdMap(ro-ref.yxx).x,sdMap(ro-ref.xyx).x,sdMap(ro-ref.xxy)),
@@ -260,6 +259,7 @@ vec3 render(vec3 ro,vec3 rd) {
   col=15.*abs(res.x-.5*(col+lig));
   edge=min(1.,col.x+col.y+col.z);
   col=.5+.3*sin(vec3(.05,.08,.1)*(m-1.));
+
   ph=m==4.||m==7.?
     ph:
     ro;
