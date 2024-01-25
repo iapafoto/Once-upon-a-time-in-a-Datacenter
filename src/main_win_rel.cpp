@@ -78,8 +78,6 @@ void entrypoint(void)
 //    HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE | WS_MAXIMIZE, 0, 0, 0, 0, 0, 0, 0, 0));
 //  SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
 
-// 4081
-    // 4088 avec show cursor
     ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN); // 20 octets a peu pres
     ShowCursor(0); // 5 octets
     HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
