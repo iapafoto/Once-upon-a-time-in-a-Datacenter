@@ -131,7 +131,7 @@ void entrypoint(void)
     } while (!GetAsyncKeyState(VK_ESCAPE) && t< MZK_DURATION * 1000);
 
     //sndPlaySound(0, 0); // 9 octets
-    ChangeDisplaySettings(0, 0); // 5 octets 4095
+    //ChangeDisplaySettings(0, 0); // 5 octets 4095
     //ShowCursor(1);  // 5/7 octets
     
     //4095 with  HASHSIZE DEFAULT
