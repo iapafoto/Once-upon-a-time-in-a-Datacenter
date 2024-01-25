@@ -20,12 +20,15 @@ extern void* myglfunc[];
 #define oglGetProgramInfoLog     ((PFNGLGETPROGRAMINFOLOGPROC)myglfunc[6])
 #endif
 
-static inline int f2i(float x) // use this to convert float to int, or use /QIfist as additional compiler parameters
-{
-    int tmp;
-    _asm fld dword ptr[x]
-        _asm fistp dword ptr[tmp];
-    return tmp;
-}
+
+
+int   f2i(float x); // use this to convert float to int, or use /QIfist as additional compiler parameters
+float mfloorf(float x);
+float mexpf(float x);
+
+//float mpowf(float x, float y);
+//float mfmodf(float x, float y);
+//float m2xf(float x);
+
 
 #endif

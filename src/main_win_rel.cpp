@@ -132,12 +132,15 @@ void entrypoint(void)
 
     } while (!GetAsyncKeyState(VK_ESCAPE) && t<132000);
 
+    ChangeDisplaySettings(0, 0);
+    //ShowCursor(1);
+
 #ifndef DESESPERATE
     #ifdef CLEANDESTROY
         #ifndef SOUND_DISABLED
             sndPlaySound(0, 0);
         #endif
-        ChangeDisplaySettings(0, 0);
+        ChangeDisplaySettings(0, 0); +13 octet
         ShowCursor(1);
     #endif
 #endif
