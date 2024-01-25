@@ -7,6 +7,7 @@
 #include <GL/gl.h>
 #include "glext.h"
 
+
 extern void* myglfunc[];
 
 #define oglCreateShaderProgramv         ((PFNGLCREATESHADERPROGRAMVPROC)myglfunc[0])
@@ -14,6 +15,7 @@ extern void* myglfunc[];
 #define oglBindProgramPipeline          ((PFNGLBINDPROGRAMPIPELINEPROC)myglfunc[2])
 #define oglUseProgramStages             ((PFNGLUSEPROGRAMSTAGESPROC)myglfunc[3])
 #define oglProgramUniform1f            ((PFNGLPROGRAMUNIFORM1FPROC)myglfunc[4])
+
 
 #ifdef DEBUG
 #define oglGetProgramiv          ((PFNGLGETPROGRAMIVPROC)myglfunc[5])

@@ -68,8 +68,6 @@ void entrypoint(void)
 {
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
 
-    
- 
     // 
     // create window
 //#ifdef DESESPERATE
@@ -130,18 +128,25 @@ void entrypoint(void)
         glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
 
-    } while (!GetAsyncKeyState(VK_ESCAPE) && t<132000);
+    } while (!GetAsyncKeyState(VK_ESCAPE) && t< MZK_DURATION * 1000);
 
-    ChangeDisplaySettings(0, 0);
-    //ShowCursor(1);
+    //sndPlaySound(0, 0); // 9 octets
+    ChangeDisplaySettings(0, 0); // 5 octets 4095
+    //ShowCursor(1);  // 5/7 octets
+    
+    //4095 with  HASHSIZE DEFAULT
+    //4095 with  HASHSIZE 512
+    //4097 with  HASHSIZE 256
+    //4099 with  HASHSIZE 128
+
 
 #ifndef DESESPERATE
     #ifdef CLEANDESTROY
         #ifndef SOUND_DISABLED
-            sndPlaySound(0, 0);
+            sndPlaySound(0, 0); // 9 octets
         #endif
-        ChangeDisplaySettings(0, 0); +13 octet
-        ShowCursor(1);
+        ChangeDisplaySettings(0, 0); // 5 octets ?
+        ShowCursor(1); // 8 octets ?
     #endif
 #endif
 
