@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-//#define CLEANDESTROY       // -25 octets si commenté   // destroy stuff (windows, glContext, ...)
+
 #ifdef DEBUG
 #define XRES 1280// 800
 #define YRES 720 //600
@@ -12,7 +12,8 @@
 //#define YRES 1080
 #endif
 
-//  Alignement des membres de la structures 1 octet (3964) => default
+
+#define CLEANDESTROY       // -25 octets si commenté   // destroy stuff (windows, glContext, ...)
 
 #define DESESPERATE   // -39 octets
 

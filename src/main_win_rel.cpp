@@ -78,6 +78,7 @@ void entrypoint(void)
 
     ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN); // 20 octets a peu pres
     ShowCursor(0); // 5 octets
+
     HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
     SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
 //#else
@@ -140,7 +141,7 @@ void entrypoint(void)
     //4099 with  HASHSIZE 128
 
 
-#ifndef DESESPERATE
+
     #ifdef CLEANDESTROY
         #ifndef SOUND_DISABLED
             sndPlaySound(0, 0); // 9 octets
@@ -148,7 +149,6 @@ void entrypoint(void)
         ChangeDisplaySettings(0, 0); // 5 octets ?
         ShowCursor(1); // 8 octets ?
     #endif
-#endif
 
     ExitProcess(0);
 }
