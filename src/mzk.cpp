@@ -52,7 +52,7 @@ float melody(float time) {
    // const float f = 440.f;
     float im = 10.f + 9.f * sinf(1.57079f * time);
        // float v = sinf(6.2831f * f * time + im * ksinf(1.57079f * f * time, ramp((time-95.f)/30.f)));
-    float v = sinf(2764.564f * time + im * ksinf(691.1476f * time, ramp((time - 95.f) / 30.f)));
+    float v = sinf(2764.564f * time + im * ksinf(691.1476f * time, ramp((time - 96.f) / 30.f)));
     return v * mexpf(-2.f * fract(8.f * time));
 }
 
@@ -63,8 +63,8 @@ void mzk_init(short* buffer) {
         float tb = t + mexpf(.0025f * t);
         float sm = ramp((t - 25.f) / 60.f);
         float y = p0d30 * melody(tb)*sm;
-        y += .4f * (1.f - ramp(fabs(t - 67.4f)/p0d20) * ramp(fabs(t - 79.9f)/p0d40)) * melody(tb * 80.f);
-        y += (p1d00 - sm) * (p0d05 * (sinf(5.f * t + hash(t)) + beat(tb)) + p0d08 * beat(tb - p0d70));
-        buffer[i] = f2i( y * 9830.f);
+        y += (.4f - .4f*ramp(fabs(t - 67.4f)/p0d20) * ramp(fabs(t - 79.9f)/p0d40)) * melody(tb * 80.f);
+        y += (p1d00 - sm) * (sinf(5.f * t + hash(t)) + beat(tb) + p1d60 * beat(tb - p0d70));
+        buffer[i] = f2i(y * 1e3f);
     }
 }
