@@ -147,7 +147,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalOptions>/CRINKLER /HASHTRIES:2000 /COMPMODE:SLOW /ORDERTRIES:2000 /REPORT:$(OutDir)\report.html /TINYIMPORT %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/CRINKLER /HASHTRIES:500 /COMPMODE:SLOW /ORDERTRIES:500 /REPORT:$(OutDir)\report.html /TINYIMPORT %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Bscmake />
     <PreBuildEvent>

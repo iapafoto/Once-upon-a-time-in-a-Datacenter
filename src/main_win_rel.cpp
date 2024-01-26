@@ -113,6 +113,17 @@ void entrypoint(void)
 
     // init mzk
     // si besoin synchro : https://github.com/vsariola/adam/blob/main/intro/main.c
+
+ /*
+#ifdef WAIT_SPACE_TO_START
+    do {
+        oglProgramUniform1f(fsid, 0, 0.f);
+        glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
+        wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
+        Sleep(10);
+    } while (!GetAsyncKeyState(VK_SPACE));
+#endif
+*/
 #ifndef SOUND_DISABLED
     mzk_init(myMuzik + 22);
     memcpy(myMuzik, wavHeader, 44);
@@ -124,7 +135,7 @@ void entrypoint(void)
     do {
         t = timeGetTime() - to;
 
-        oglProgramUniform1f(fsid, 0, ((float)t) / 1000.f);
+        oglProgramUniform1f(fsid, 0, ((float)t) / 1000.f - 10.f);
         glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
 
