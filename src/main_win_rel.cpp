@@ -81,6 +81,7 @@ void entrypoint(void)
 
     HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
     SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
+
 //#else
 
 // 4100
@@ -110,14 +111,12 @@ void entrypoint(void)
     oglBindProgramPipeline(pid);
     oglUseProgramStages(pid, GL_FRAGMENT_SHADER_BIT, fsid);
 
-
     // init mzk
     // si besoin synchro : https://github.com/vsariola/adam/blob/main/intro/main.c
 #ifndef SOUND_DISABLED
     mzk_init(myMuzik + 22);
     memcpy(myMuzik, wavHeader, 44);
     sndPlaySound((const char*)&myMuzik, SND_ASYNC | SND_MEMORY);
-
 #endif
 
     // play intro
@@ -130,25 +129,17 @@ void entrypoint(void)
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
 
     } while (!GetAsyncKeyState(VK_ESCAPE) && t< MZK_DURATION * 1000);
-
-    //sndPlaySound(0, 0); // 9 octets
-    //ChangeDisplaySettings(0, 0); // 5 octets 4095
-    //ShowCursor(1);  // 5/7 octets
     
-    //4095 with  HASHSIZE DEFAULT
-    //4095 with  HASHSIZE 512
-    //4097 with  HASHSIZE 256
-    //4099 with  HASHSIZE 128
-
-
-
+    
+    
     #ifdef CLEANDESTROY
-        #ifndef SOUND_DISABLED
-            sndPlaySound(0, 0); // 9 octets
-        #endif
         ChangeDisplaySettings(0, 0); // 5 octets ?
-        ShowCursor(1); // 8 octets ?
+        #ifndef SOUND_DISABLED
+            sndPlaySound(0, SND_NODEFAULT); // 9 octets
+        #endif
+       // ShowCursor(1); // 5 octets ?
     #endif
-
+  //  to = timeGetTime();
+    
     ExitProcess(0);
 }
