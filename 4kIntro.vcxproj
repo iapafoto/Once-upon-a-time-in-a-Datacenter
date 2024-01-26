@@ -147,7 +147,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalOptions>/CRINKLER /HASHTRIES:500 /COMPMODE:SLOW /ORDERTRIES:500 /REPORT:$(OutDir)\report.html /TINYIMPORT %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/CRINKLER /HASHTRIES:1500 /COMPMODE:VERYSLOW /ORDERTRIES:1500 /REPORT:$(OutDir)\report.html /TINYIMPORT %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Bscmake />
     <PreBuildEvent>
@@ -210,7 +210,6 @@
     <ClInclude Include="src\system.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\iq\i4k_Software\src\system.cpp" />
     <ClCompile Include="src\intro.cpp" />
     <ClCompile Include="src\main_win_deb.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -220,6 +219,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\mzk.cpp" />
+    <ClCompile Include="src\system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\fragment_shader.glsl">

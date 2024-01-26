@@ -12,6 +12,8 @@
 
 // 4069 vs 4072
 #define ramp(x) clamp(x, p0d00) // 4064 vs 4072 -> -8o
+#define mfloorf(x) (float)f2i(x - p0d50)
+
 //#define mmfloorf(x)  (float)mifloorf(x)
 
 float fract(float a) {
@@ -42,10 +44,10 @@ float ksinf(float x, float k) {  // ramp(0,1,x)  4079  + 5 en inline
 
 float beat(float time) {
     float t = fract(time);
-    float a = sinf(691.15f * mexpf(-5.f * t) * t);
+    float a = sinf(691.15f * mexpf(-4.f * t) * t);
     float v = clamp(a * 8.f, -1.f) * (mexpf(-10.f * t) + mexpf(-t));
-    v += a * 8.f * mexpf(-t); 
-    return v + .8f * a * mexpf(- 3.f * t - p0d50);  // 4076
+    v += a * 10.f * mexpf(-t); 
+    return v;// +.8f * a * mexpf(-3.f * t - p0d50);  // 4076
 }
 
 float melody(float time) {
@@ -62,9 +64,9 @@ void mzk_init(short* buffer) {
         float t = (float)i / (float)MZK_RATE;
         float tb = t + mexpf(.0025f * t);
         float sm = ramp((t - 25.f) / 60.f);
-        float y = p0d30 * melody(tb)*sm;
-        y += (.4f - .4f*ramp(fabs(t - 67.4f)/p0d20) * ramp(fabs(t - 79.9f)/p0d40)) * melody(tb * 80.f);
-        y += (p1d00 - sm) * (sinf(5.f * t + hash(t)) + beat(tb) + p1d60 * beat(tb - p0d70));
+        float y = /*p0d30 */ melody(tb) * sm;
+        y += (p0d60 - p0d60 * ramp(fabs(t - 66.4f/*67.4f*/)/p0d20) * ramp(fabs(t - 78.9f/*79.9f*/)/p0d40)) * melody(tb * 80.f); // decalé de 1s ?
+        y += .5f*(p1d00 - sm) * (sinf(5.f * t + hash(t)) + beat(tb+p0d30) + p0d60 * beat(tb));
         buffer[i] = f2i(y * 1e3f);
     }
 }

@@ -25,7 +25,7 @@ extern void* myglfunc[];
 
 
 int   f2i(float x); // use this to convert float to int, or use /QIfist as additional compiler parameters
-float mfloorf(float x);
+//float mfloorf(float x);
 float mexpf(float x);
 
 //float mpowf(float x, float y);
