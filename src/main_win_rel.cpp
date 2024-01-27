@@ -93,20 +93,20 @@ void entrypoint(void)
 //  SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
 
 //------------------
-//    ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN); // 20 octets a peu pres
-//    ShowCursor(0); // 5 octets
-//    HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
-//    SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
+    ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN); // 20 octets a peu pres
+    ShowCursor(0); // 5 octets
+    HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
+    SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
  //------------------
 //#else
 
     // full screen
-    if (ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) return;
-    ShowCursor(0); // 5 octet
-    HWND hWnd = CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0);
-    if (!hWnd) return;
-    HDC hDC = GetDC(hWnd);
-    if (SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd)) return;
+//    if (ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) return;
+//    ShowCursor(0); // 5 octet
+//    HWND hWnd = CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0);
+//    if (!hWnd) return;
+//    HDC hDC = GetDC(hWnd);
+//    if (SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd)) return;
 //#endif
 
     // initalize opengl
@@ -151,7 +151,7 @@ void entrypoint(void)
         oglProgramUniform1f(fsid, 0, t);
         glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
-    //    PeekMessage(0, 0, 0, 0, PM_REMOVE); // increase compatibility 3 octets
+        PeekMessage(0, 0, 0, 0, PM_REMOVE); // increase compatibility 3 octets
     } while (!GetAsyncKeyState(VK_ESCAPE) && t < MZK_DURATION);
    
     #ifdef CLEANDESTROY
