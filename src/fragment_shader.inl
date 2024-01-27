@@ -296,9 +296,9 @@ const char *input =
      ".01*s(g-g+v).r:"
      "0.),2));"
    "f=50.;"
-   "o=c(t,e,f);"
+   "o=.7*c(t,e,f);"
    "if(e.r!=0.)"
-     "o+=(1.-f)*.2*c(t,e,l);"
+     "o+=(1.-f)*.15*c(t,e,l);"
    "f=smoothstep(125.,132.,v);"
    "r=vec4(pow(clamp(mix(o,vec3(.1,1,2),.5*smoothstep(1.,1.3,n(2.5*g)+f))*(1.-f),0.,1.),vec3(.6))*4.*sqrt(i.r*i.g*(1.-i.r)*(1.-i.g)),1);"
  "}";
