@@ -1,8 +1,6 @@
 // Generated with Shader Minifier 1.3.6 (https://github.com/laurentlb/Shader_Minifier/)
 #ifndef SHADER_CODE_H_
 # define SHADER_CODE_H_
-# define VAR_cl "r"
-# define VAR_iTime "v"
 
 const char* input =
 "#version 430\n"
@@ -272,7 +270,7 @@ const char* input =
 "l=1.05;"
 "a=1.;"
 "for(float E=.02;E<.32;E+=.06)"
-"E-=(E-c(r+G*E).r)*(l*=.95);"
+"a-=(E-c(r+G*E).r)*(l*=.95);"
 "F=.1+(.5*clamp(a,0.,1.)+.5)*dot(G,F)*clamp(b,0.,1.)*vec3(1.3,1,.6)+4.*pow(clamp(dot(u,F),0.,1.),46.)*vec3(1,.9,.7)+.25*pow(clamp(1.+dot(G,i),0.,1.),2.)+vec3(.025,.12,.25)*max(0.,dot(i,reflect(vec3(.97,0,.24),G)));"
 "return mix(mix(.2+C*(2.+cos(3.*v))*vec3(.1,1,2),e,m)*F,mix(vec3(1.5,.9,.75),vec3(.2,.3,.5),m),smoothstep(10.,50.,x));"
 "}"
@@ -295,5 +293,5 @@ const char* input =
 "f=smoothstep(125.,132.,v);"
 "r=vec4(pow(clamp(mix(c(l,p),vec3(.1,1,2),.5*smoothstep(1.,1.3,n(2.5*g)+f))*(1.-f),0.,1.),vec3(.6))*4.*sqrt(i.r*i.g*(1.-i.r)*(1.-i.g)),1);"
 "}";
-//4072 xyz //4060 rgba!!! // 4062 stpq
+
 #endif // SHADER_CODE_H_
