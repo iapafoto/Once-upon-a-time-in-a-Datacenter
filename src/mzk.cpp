@@ -65,7 +65,7 @@ void mzk_init(short* buffer) {
         float tb = t + mexpf(.0025f * t);
         float sm = ramp((t - 25.f) / 60.f);
         float y = /*p0d30 */ melody(tb) * sm;
-        y += (p0d60 - p0d60 * ramp(fabs(t - 66.4f/*67.4f*/)/p0d20) * ramp(fabs(t - 78.9f/*79.9f*/)/p0d40)) * melody(tb * 80.f); // decalé de 1s ?
+        y += (p0d60 - p0d60 * ramp(fabs(t - 67.4f)/p0d20) * ramp(fabs(t - 79.9f)/p0d40)) * melody(tb * 80.f); // decalé de 1s ?
         y += .5f*(p1d00 - sm) * (sinf(5.f * t + hash(t)) + beat(tb+p0d30) + p0d60 * beat(tb));
         buffer[i] = f2i(y * 1e3f);
     }
