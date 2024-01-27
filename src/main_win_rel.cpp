@@ -65,10 +65,9 @@ static DEVMODE screenSettings = { {0},
 
 static char* glFuncNames[] = {
     "glCreateShaderProgramv",
-    "glGenProgramPipelines",
-    "glBindProgramPipeline",
-    "glUseProgramStages",
-    "glProgramUniform1f" };
+    "glProgramUniform1f", 
+    "glUseProgram"
+};
 
 
 #ifdef __cplusplus
@@ -115,8 +114,8 @@ void entrypoint(void)
     // initalize opengl
     wglMakeCurrent(hDC, wglCreateContext(hDC));
 
-    void* myglfunc[5];
-    for (int i = 0; i < 5; i++) {
+    void* myglfunc[3];
+    for (int i = 0; i < 3; i++) {
         myglfunc[i] = wglGetProcAddress(glFuncNames[i]);
 #ifndef DESESPERATE
          if (!myglfunc[i]) return; // -10 octets
@@ -124,10 +123,7 @@ void entrypoint(void)
     }
 
     int fsid = oglCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &input);
-    unsigned int pid;
-    oglGenProgramPipelines(1, &pid);
-    oglBindProgramPipeline(pid);
-    oglUseProgramStages(pid, GL_FRAGMENT_SHADER_BIT, fsid);
+    oglUseProgram(fsid);
 
     // init mzk
 #ifdef SOUND_NOSYNC
@@ -157,7 +153,7 @@ void entrypoint(void)
         oglProgramUniform1f(fsid, 0, t);
         glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
-
+        PeekMessage(0, 0, 0, 0, PM_REMOVE); // increase compatibility 3 octets
     } while (!GetAsyncKeyState(VK_ESCAPE) && t < MZK_DURATION);
     
     #ifdef CLEANDESTROY
@@ -165,7 +161,7 @@ void entrypoint(void)
         #ifndef SOUND_DISABLED
             sndPlaySound(0, SND_NODEFAULT); // 9 octets
         #endif
-       // ShowCursor(1); // 5 octets ?
+        ShowCursor(1); // 5 octets ?
     #endif
     
     ExitProcess(0);

@@ -2,7 +2,9 @@
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
 
+#define WIN32_LEAN_AND_MEAN
 #define WIN32_EXTRA_LEAN
+
 #include <windows.h>
 #include <GL/gl.h>
 #include "glext.h"
@@ -10,12 +12,10 @@
 
 extern void* myglfunc[];
 
-#define oglCreateShaderProgramv         ((PFNGLCREATESHADERPROGRAMVPROC)myglfunc[0])
-#define oglGenProgramPipelines          ((PFNGLGENPROGRAMPIPELINESPROC)myglfunc[1])
-#define oglBindProgramPipeline          ((PFNGLBINDPROGRAMPIPELINEPROC)myglfunc[2])
-#define oglUseProgramStages             ((PFNGLUSEPROGRAMSTAGESPROC)myglfunc[3])
-#define oglProgramUniform1f            ((PFNGLPROGRAMUNIFORM1FPROC)myglfunc[4])
 
+#define oglCreateShaderProgramv         ((PFNGLCREATESHADERPROGRAMVPROC)myglfunc[0])
+#define oglProgramUniform1f            ((PFNGLPROGRAMUNIFORM1FPROC)myglfunc[1])
+#define oglUseProgram					((PFNGLUSEPROGRAMPROC)myglfunc[2])
 
 #ifdef DEBUG
 #define oglGetProgramiv          ((PFNGLGETPROGRAMIVPROC)myglfunc[5])

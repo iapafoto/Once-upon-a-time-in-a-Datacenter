@@ -204,17 +204,11 @@
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\fp.h" />
     <ClInclude Include="src\glext.h" />
-    <ClInclude Include="src\intro.h" />
     <ClInclude Include="src\main.h" />
     <ClInclude Include="src\mzk.h" />
     <ClInclude Include="src\system.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\intro.cpp" />
-    <ClCompile Include="src\main_win_deb.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_test|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="src\main_win_rel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>

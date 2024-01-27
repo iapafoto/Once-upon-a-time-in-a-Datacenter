@@ -273,7 +273,7 @@ const char *input =
    "a=1.;"
    "for(float D=.02;D<.32;D+=.06)"
      "a-=(D-c(r+E*D).r)*(o*=.95);"
-   "H=.1+(.5*clamp(a,0.,1.)+.5)*dot(E,H)*clamp(C,0.,1.)*vec3(1.3,1,.6)+pow(clamp(dot(F,H),0.,1.),12.)+.25*pow(clamp(1.+dot(E,i),0.,1.),2.)+vec3(.025,.12,.25)*max(0.,dot(i,reflect(vec3(.97,0,.24),E)));"
+   "H=.1+min(a,1.)*dot(E,H)*max(C,0.)*vec3(1.3,1,.6)+pow(max(dot(F,H),0.),12.)+.25*pow(clamp(1.+dot(E,i),0.,1.),2.)+vec3(.025,.12,.25)*max(0.,dot(i,reflect(vec3(.97,0,.24),E)));"
    "i=u.g==3.||u.g==.1?"
      "F:"
      "F-F;"
@@ -300,7 +300,7 @@ const char *input =
    "if(e.r!=0.)"
      "o+=(1.-f)*.15*c(t,e,l);"
    "f=smoothstep(125.,132.,v);"
-   "r=vec4(pow(clamp(mix(o,vec3(.1,1,2),.5*smoothstep(1.,1.3,n(2.5*g)+f))*(1.-f),0.,1.),vec3(.6))*4.*sqrt(i.r*i.g*(1.-i.r)*(1.-i.g)),1);"
+   "r=vec4(pow(clamp(mix(o,vec3(.1,.5,1),smoothstep(1.,1.3,n(2.5*g)+f))*(1.-f),0.,1.),vec3(.6))*4.*sqrt(i.r*i.g*(1.-i.r)*(1.-i.g)),1);"
  "}";
 
 #endif // SHADER_CODE_H_
