@@ -1,25 +1,79 @@
 #define WIN32_LEAN_AND_MEAN
 #define WIN32_EXTRA_LEAN
+#define VC_LEANMEAN
+#define VC_EXTRALEAN
 
 #include <windows.h>
 #include "config.h"
-#ifndef SOUND_DISABLED
-    #include <mmsystem.h>
-    #include "mzk.h"
-#endif
 
 #include <GL/gl.h>
 #include "system.h"
 #include "fragment_shader.inl"
 
 
-#ifndef SOUND_DISABLED
-static const int wavHeader[11] = {
+#if (defined SOUND_NOSYNC) || (defined SOUND_SYNC)
+  #include <mmsystem.h>
+  #include <mmreg.h>
+  #include "mzk.h"
+#endif
+
+#ifdef SOUND_NOSYNC
+  static short myMuzik[MZK_NUMSAMPLESC + 22]; // initialise a l'exterieur car entrypoint a une limite de taille de pile
+
+  static const int wavHeader[11] = {
     0x46464952,  MZK_NUMSAMPLES * 2 + 36,  0x45564157,  0x20746D66,  16,
     WAVE_FORMAT_PCM | (MZK_NUMCHANNELS << 16),  MZK_RATE, MZK_RATE * MZK_NUMCHANNELS * sizeof(short),
     (MZK_NUMCHANNELS * sizeof(short)) | ((8 * sizeof(short)) << 16),  0x61746164,  MZK_NUMSAMPLES * sizeof(short)
+  };
+
+#elif defined(SOUND_SYNC)
+static short myMuzik[MZK_NUMSAMPLESC];
+
+// MAX_SAMPLES gives you the number of samples for the whole song. we always produce stereo samples, so times 2 for the buffer
+HWAVEOUT	hWaveOut;
+
+WAVEFORMATEX WaveFMT =
+{
+#ifdef FLOAT_32BIT	
+    WAVE_FORMAT_IEEE_FLOAT,
+#else
+    WAVE_FORMAT_PCM,
+#endif		
+    MZK_NUMCHANNELS, // channels
+    MZK_RATE, // samples per sec
+    MZK_RATE * sizeof(short) * MZK_NUMCHANNELS, // bytes per sec
+    sizeof(short) * MZK_NUMCHANNELS, // block alignment;
+    sizeof(short) * 8/*4* MZK_NUMCHANNELS*/, // bits per sample
+    0 // extension not needed
 };
+/*
+WAVEFORMATEX WaveFMT =
+{
+    WAVE_FORMAT_PCM,            // Format de la forme d'onde
+    1,                          // Nombre de canaux (Mono)
+    SAMPLE_RATE,                // Fréquence d'échantillonnage
+    SAMPLE_RATE * sizeof(short),// Nombre d'octets par seconde
+    sizeof(short),              // Alignement de bloc
+    BITS_PER_SAMPLE,            // Bits par échantillon
+    0                           // Extension (non utilisée)
+};
+*/
+WAVEHDR WaveHDR =
+{
+    (LPSTR)myMuzik,
+    MZK_NUMSAMPLESC * sizeof(float),//2,			// MAX_SAMPLES*sizeof(float)*2(stereo)
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+};
+
+static MMTIME MMTime = { TIME_MS/*TIME_SAMPLES*/, 0};
+
 #endif
+
 
 static const PIXELFORMATDESCRIPTOR pfd = {
     sizeof(PIXELFORMATDESCRIPTOR), 1, PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER, PFD_TYPE_RGBA,
@@ -57,9 +111,6 @@ extern "C"
 #endif
 
 //----------------------------------------------------------------------------
-#ifndef SOUND_DISABLED
-static short myMuzik[MZK_NUMSAMPLESC + 22]; // initialise a l'exterieur car entrypoint a une limite de taille de pile
-#endif
 
 void entrypoint(void)
 {
@@ -110,16 +161,29 @@ void entrypoint(void)
 
     // init mzk
     // si besoin synchro : https://github.com/vsariola/adam/blob/main/intro/main.c
-#ifndef SOUND_DISABLED
+#ifdef SOUND_NOSYNC
     mzk_init(myMuzik + 22);
     memcpy(myMuzik, wavHeader, 44);
     sndPlaySound((const char*)&myMuzik, SND_ASYNC | SND_MEMORY);
+
+#elif defined(SOUND_SYNC)
+    mzk_init(myMuzik);
+
+    waveOutOpen(&hWaveOut, WAVE_MAPPER, &WaveFMT, NULL, 0, CALLBACK_NULL);
+    waveOutPrepareHeader(hWaveOut, &WaveHDR, sizeof(WaveHDR));
+    waveOutWrite(hWaveOut, &WaveHDR, sizeof(WaveHDR));
+
 #endif
 
     // play intro
     long t,to = timeGetTime();
     do {
+     #ifdef SOUND_SYNC
+        waveOutGetPosition(hWaveOut, &MMTime, sizeof(MMTIME));
+        t = (MMTime.u.ms)/100;// / 500;// 1000;
+    #else
         t = timeGetTime() - to;
+    #endif
         oglProgramUniform1f(fsid, 0, ((float)t) / 1000.f);
         glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
