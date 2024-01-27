@@ -130,7 +130,6 @@ void entrypoint(void)
     oglUseProgramStages(pid, GL_FRAGMENT_SHADER_BIT, fsid);
 
     // init mzk
-    // si besoin synchro : https://github.com/vsariola/adam/blob/main/intro/main.c
 #ifdef SOUND_NOSYNC
     mzk_init(myMuzik + 22);
     memcpy(myMuzik, wavHeader, 44);
@@ -168,7 +167,6 @@ void entrypoint(void)
         #endif
        // ShowCursor(1); // 5 octets ?
     #endif
-  //  to = timeGetTime();
     
     ExitProcess(0);
 }

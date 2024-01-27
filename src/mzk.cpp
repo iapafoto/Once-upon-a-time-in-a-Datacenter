@@ -10,11 +10,8 @@
 
 // https://karmafx.net/docs/karmafx_floattricks.pdf
 
-// 4069 vs 4072
-#define ramp(x) clamp(x, p0d00) // 4064 vs 4072 -> -8o
+#define ramp(x) clamp(x, p0d00) // -8 octets
 #define mfloorf(x) (float)f2i(x - p0d50)
-
-//#define mmfloorf(x)  (float)mifloorf(x)
 
 float fract(float a) {
     return a - mfloorf(a);
@@ -26,9 +23,9 @@ float hash(float x) {
 /*
 float clamp(float a, float n) {  //clamp(a,n,1)
     return a < n ? n : a > 1.f ? 1.f : a;
-}*/
-float clamp(float x, float a) // -3 octets 
-{
+}
+*/
+float clamp(float x, float a) { // -3 octets
     return .5f * (fabs(x - a) + a + 1.f - fabs(x - 1.f));
 }
 
@@ -37,7 +34,7 @@ float clamp(float x, float a) // -3 octets
 //    return x * x * (3.f - x-x);
 //}
 
-float ksinf(float x, float k) {  // ramp(0,1,x)  4079  + 5 en inline   
+float ksinf(float x, float k) {  // + 5 en inline   
     k += .001f;
     return mfloorf(sinf(x) / k) * k;
 }
