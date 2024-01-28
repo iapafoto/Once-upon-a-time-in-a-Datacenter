@@ -63,12 +63,6 @@ static DEVMODE screenSettings = { {0},
     #endif
 };
 
-static char* glFuncNames[] = {
-    "glCreateShaderProgramv",
-    "glProgramUniform1f", 
-    "glUseProgram"
-};
-
 
 #ifdef __cplusplus
 extern "C"
@@ -112,54 +106,39 @@ void entrypoint(void)
     // initalize opengl
     wglMakeCurrent(hDC, wglCreateContext(hDC));
 
-    void* myglfunc[3];
-    for (int i = 0; i < 3; i++) {
-        myglfunc[i] = wglGetProcAddress(glFuncNames[i]);
-#ifndef DESESPERATE
-         if (!myglfunc[i]) return; // -10 octets
-#endif
-    }
-
-    int fsid = oglCreateShaderProgramv(GL_FRAGMENT_SHADER, 1, &input);
-    oglUseProgram(fsid);
+    int fsid = ((PFNGLCREATESHADERPROGRAMVPROC)wglGetProcAddress("glCreateShaderProgramv"))(GL_FRAGMENT_SHADER, 1, &input);
+    ((PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram"))(fsid);
 
     // init mzk
-#ifdef SOUND_NOSYNC
-    mzk_init(myMuzik + 22);
-    memcpy(myMuzik, wavHeader, 44);
-    sndPlaySound((const char*)&myMuzik, SND_ASYNC | SND_MEMORY);
-    long to = timeGetTime();
-
-#elif defined(SOUND_SYNC)
     mzk_init(myMuzik);
     waveOutOpen(&hWaveOut, WAVE_MAPPER, &WaveFMT, NULL, 0, CALLBACK_NULL);
     waveOutPrepareHeader(hWaveOut, &WaveHDR, sizeof(WaveHDR));
     waveOutWrite(hWaveOut, &WaveHDR, sizeof(WaveHDR));
 
-#endif
-
     // play intro
     float t;
     do {
-     #ifdef SOUND_SYNC
-//        MMTime.wType = TIME_SAMPLES;
         waveOutGetPosition(hWaveOut, &MMTime, sizeof(MMTIME));
         t = (float)MMTime.u.sample / (float)MZK_RATE;
-    #else
-        t = (float)(timeGetTime() - to)/1000.f;
-    #endif
-        oglProgramUniform1f(fsid, 0, t);
+
+        ((PFNGLPROGRAMUNIFORM1FPROC)wglGetProcAddress("glProgramUniform1f"))(fsid, 0, t);
         glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
         wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
+
+//        if (t == 0.) {
+// init musik + 20 octets !
+//        }
+
         PeekMessage(0, 0, 0, 0, PM_REMOVE); // increase compatibility 3 octets
+
     } while (!GetAsyncKeyState(VK_ESCAPE) && t < MZK_DURATION);
    
     #ifdef CLEANDESTROY
         ChangeDisplaySettings(0, 0); // 5 octets ?
         #ifndef SOUND_DISABLED
-            sndPlaySound(0, SND_NODEFAULT); // 9 octets
+   //         sndPlaySound(0, SND_NODEFAULT); // 9 octets
         #endif
-        ShowCursor(1); // 5 octets ?
+    //    ShowCursor(1); // 5 octets ?
     #endif
     
     ExitProcess(0);
