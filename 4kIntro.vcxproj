@@ -147,7 +147,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalOptions>/CRINKLER /HASHTRIES:2500 /COMPMODE:SLOW /ORDERTRIES:2500 /REPORT:$(OutDir)\report.html /TINYIMPORT %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/CRINKLER /HASHTRIES:1500 /COMPMODE:SLOW /ORDERTRIES:1500 /REPORT:$(OutDir)\report.html /TINYIMPORT %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Bscmake />
     <PreBuildEvent>
@@ -220,7 +220,6 @@
       <FileType>Text</FileType>
     </None>
     <None Include="src\fragment_shader.inl" />
-    <None Include="src\vertex_shader.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

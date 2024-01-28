@@ -6,10 +6,10 @@
 #define XRES 1280// 800
 #define YRES 720 //600
 #else
-#define XRES 1280
-#define YRES 720
-//#define XRES 1920
-//#define YRES 1080
+//#define XRES 1280
+//#define YRES 720
+#define XRES 1920
+#define YRES 1080
 #endif
 
 

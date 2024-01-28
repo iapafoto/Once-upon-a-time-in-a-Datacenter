@@ -6,12 +6,30 @@
 #ifdef WINDOWS
 
 
-int f2i(float x) // use this to convert float to int, or use /QIfist as additional compiler parameters
+int f2i(const float x) // use this to convert float to int, or use /QIfist as additional compiler parameters
 {
     int t;
     _asm fld dword ptr[x]
     _asm fistp dword ptr[t];
     return t;
+}
+
+float mexpf(const float x)
+{
+    float res;
+    _asm fld     dword ptr[x]
+        _asm fldl2e
+    _asm fmulp   st(1), st(0)
+    _asm fld1
+    _asm fld     st(1)
+    _asm fprem
+    _asm f2xm1
+    _asm faddp   st(1), st(0)
+    _asm fscale
+    _asm fxch    st(1)
+    _asm fstp    st(0)
+    _asm fstp    dword ptr[res]
+        return res;
 }
 
 /*
@@ -31,23 +49,6 @@ int f2i(float x) {
 //    return (float)f2i(x - p0d50);
 //}
 
-float mexpf(const float x) 
-{
-    float res;
-    _asm fld     dword ptr[x]
-        _asm fldl2e
-    _asm fmulp   st(1), st(0)
-    _asm fld1
-    _asm fld     st(1)
-    _asm fprem
-    _asm f2xm1
-    _asm faddp   st(1), st(0)
-    _asm fscale
-    _asm fxch    st(1)
-    _asm fstp    st(0)
-    _asm fstp    dword ptr[res]
-        return res;
-}
 
 /* 4087
 float mexpf(float p) { // approx + 5!
