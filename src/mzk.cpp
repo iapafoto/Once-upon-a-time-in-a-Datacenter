@@ -26,7 +26,7 @@ float clamp(float a, float n) {  //clamp(a,n,1)
 }
 */
 float clamp(float x, float a) { // -3 octets
-    return .5f * (fabs(x - a) + a + 1.f - fabs(x - 1.f));
+    return p0d50 * (fabs(x - a) + a + 1.f - fabs(x - 1.f));
 }
 
 //float smoothstep(float x) {  // ramp(0,1,x)  4079  + 5 en inline
@@ -63,7 +63,7 @@ void mzk_init(short* buffer) {
         float sm = ramp((t - 25.f) / 60.f);
         float y = /*p0d30 */ melody(tb) * sm;
         y += (p0d60 - p0d60 * ramp(fabs(t - 67.4f)/p0d20) * ramp(fabs(t - 79.9f)/p0d40)) * melody(tb * 80.f); // decalé de 1s ?
-        y += .5f*(p1d00 - sm) * (sinf(5.f * t + hash(t)) + beat(tb+p0d30) + p0d60 * beat(tb));
+        y += p0d50*(p1d00 - sm) * (sinf(5.f * t + hash(t)) + beat(tb+p0d30) + p0d60 * beat(tb));
         buffer[i] = f2i(y * 1e3f);
     }
 }

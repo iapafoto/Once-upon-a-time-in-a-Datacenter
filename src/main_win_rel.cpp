@@ -57,7 +57,7 @@ static DEVMODE screenSettings = { {0},
 extern "C"
 {
 #endif
-    int  _fltused = 0;
+    int  _fltused = 0; // avoid injection of code for float or double
 #ifdef __cplusplus
 }
 #endif
