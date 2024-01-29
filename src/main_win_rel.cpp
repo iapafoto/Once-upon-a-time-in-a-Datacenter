@@ -63,13 +63,21 @@ extern "C"
 #endif
 
 //----------------------------------------------------------------------------
+int fsid;
+HDC hDC;
+
+void render() { //4032
+    ((PFNGLPROGRAMUNIFORM1FPROC)wglGetProcAddress("glProgramUniform1f"))(fsid, 0, (float)MMTime.u.sample / (float)MZK_RATE);
+    glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
+    wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
+}
 
 void entrypoint(void)
 {
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
     ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN); // 20 octets a peu pres
     ShowCursor(0); // 5 octets
-    HDC hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
+    hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
     SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
 
  //------------------
@@ -84,8 +92,9 @@ void entrypoint(void)
     // initalize opengl
     wglMakeCurrent(hDC, wglCreateContext(hDC));
 
-    int fsid = ((PFNGLCREATESHADERPROGRAMVPROC)wglGetProcAddress("glCreateShaderProgramv"))(GL_FRAGMENT_SHADER, 1, &input);
+    fsid = ((PFNGLCREATESHADERPROGRAMVPROC)wglGetProcAddress("glCreateShaderProgramv"))(GL_FRAGMENT_SHADER, 1, &input);
     ((PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram"))(fsid);
+    render(); // Display waiting picture during music init (t==0)
 
     // init mzk
     mzk_init(myMuzik);
@@ -96,17 +105,13 @@ void entrypoint(void)
     // play intro
     do {
         waveOutGetPosition(hWaveOut, &MMTime, sizeof(MMTIME));
-
-        ((PFNGLPROGRAMUNIFORM1FPROC)wglGetProcAddress("glProgramUniform1f"))(fsid, 0, (float)MMTime.u.sample / (float)MZK_RATE);
-        glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
-        wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
-
+        render();
         PeekMessage(0,0,0,0,PM_REMOVE); // increase compatibility 3 octets
 
     } while (!GetAsyncKeyState(VK_ESCAPE) && MMTime.u.sample < MZK_NUMSAMPLES);
    
-    ChangeDisplaySettings(0, 0); // 5 octets ?
+    ChangeDisplaySettings(0, 0);    // 5 octets ?
     sndPlaySound(0, SND_NODEFAULT); // 9 octets
-    ShowCursor(1); // 5 octets ?
+    ShowCursor(1);                  // 5 octets ?
     ExitProcess(0);
 }
