@@ -67,7 +67,7 @@ int fsid;
 HDC hDC;
 
 void render() { //4032
-    ((PFNGLPROGRAMUNIFORM1FPROC)wglGetProcAddress("glProgramUniform1f"))(fsid, 0, (float)MMTime.u.sample / (float)MZK_RATE);
+    ((PFNGLPROGRAMUNIFORM1FPROC)wglGetProcAddress("glProgramUniform1f"))(fsid, 0, (float)(MMTime.u.sample) / (float)MZK_RATE);
     glRects(-1, -1, 1, 1); // Deprecated. Still seems to work though.
     wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
 }
@@ -109,9 +109,11 @@ void entrypoint(void)
         PeekMessage(0,0,0,0,PM_REMOVE); // increase compatibility 3 octets
 
     } while (!GetAsyncKeyState(VK_ESCAPE) && MMTime.u.sample < MZK_NUMSAMPLES);
-   
+
+#ifndef CLEANDESTROY 
     ChangeDisplaySettings(0, 0);    // 5 octets ?
     sndPlaySound(0, SND_NODEFAULT); // 9 octets
     ShowCursor(1);                  // 5 octets ?
+#endif
     ExitProcess(0);
 }

@@ -13,19 +13,19 @@
 #define ramp(x) clamp(x, p0d00) // -8 octets
 #define mfloorf(x) (float)f2i(x - p0d50)
 
-float fract(float a) {
+float fract(const float a) {
     return a - mfloorf(a);
 }
 
-float hash(float x) {
-    return fract(sinf(x * 43758.54f) );
-}
+#define hash(x) fract(sinf(x * 43758.54f))
+
 /*
 float clamp(float a, float n) {  //clamp(a,n,1)
     return a < n ? n : a > 1.f ? 1.f : a;
 }
 */
-float clamp(float x, float a) { // -3 octets
+
+float clamp(const float x, const float a) { // -11 octets / -3 octets
     return p0d50 * (fabs(x - a) + a + 1.f - fabs(x - 1.f));
 }
 
@@ -34,36 +34,40 @@ float clamp(float x, float a) { // -3 octets
 //    return x * x * (3.f - x-x);
 //}
 
-float ksinf(float x, float k) {  // + 5 en inline   
+float ksinf(const float x, float k) {  // + 5 en inline   
     k += .001f;
     return mfloorf(sinf(x) / k) * k;
 }
 
-float beat(float time) {
+float beat(const float time) {
     float t = fract(time);
     float a = sinf(691.15f * mexpf(-4.f * t) * t);
-    float v = clamp(a * 8.f, -1.f) * (mexpf(-10.f * t) + mexpf(-t));
-    v += a * 10.f * mexpf(-t); 
-    return v;// +.8f * a * mexpf(-3.f * t - p0d50);  // 4076
+    float h = mexpf(-t);
+    return clamp(a*8.f, -1.f) * (mexpf(-10.f * t) + h) + a*10.f*h; 
+   // return v;// +.8f * a * mexpf(-3.f * t - p0d50);  // 4076
 }
 
-float melody(float time) {
-   // const float f = 440.f;
-    float im = 10.f + 9.f * sinf(1.57079f * time);
+float melody(const float t) {
+   // float im = 10.f + 9.f * sinf(1.57079f * t);
        // float v = sinf(6.2831f * f * time + im * ksinf(1.57079f * f * time, ramp((time-95.f)/30.f)));
-    float v = sinf(2764.564f * time + im * ksinf(691.1476f * time, ramp((time - 96.f) / 30.f)));
-    return v * mexpf(-2.f * fract(8.f * time));
+    const float v = sinf(2764.564f * t + (10.f + 9.f * sinf(1.57079f * t)) * ksinf(691.1476f * t, ramp((t - 96.f) / 30.f)));
+    return v * mexpf(-2.f * fract(8.f * t));;
 }
 
 
 void mzk_init(short* buffer) {
     for (int i = 0; i < MZK_NUMSAMPLES; i++) {
-        float t = (float)i / (float)MZK_RATE;
+        float t = (float)i / (float)(MZK_RATE);
+
         float tb = t + mexpf(.0025f * t);
         float sm = ramp((t - 25.f) / 60.f);
-        float y = /*p0d30 */ melody(tb) * sm;
-        y += (1.f - ramp(fabs(t - 67.4f)/p0d20) * ramp(fabs(t - 79.9f)/p0d40)) * melody(tb * 80.f); // decalé de 1s ?
+        float y = 1.f - ramp(fabs(t - 67.4f) / p0d20) * ramp(fabs(t - 79.9f) / p0d40);
+        y *= melody(tb * 80.f);
         y += p0d50*(p1d00 - sm) * (sinf(5.f * t + hash(t)) + beat(tb+p0d30) + p0d60 * beat(tb));
-        buffer[i] = f2i(y * 1e3f);
+        float m = melody(tb) * sm;
+//        float k = .5f + .4f * cos(6.28f*tb);
+        float k = p0d60 - p0d60*fract(2.f*tb);
+        buffer[i*2] = f2i((y+k*m) * 1e3f);
+        buffer[i*2+1] = f2i((y+m-k*m) * 1e3f);
     }
 }
