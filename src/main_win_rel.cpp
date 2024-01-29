@@ -110,9 +110,13 @@ void entrypoint(void)
 
     } while (!GetAsyncKeyState(VK_ESCAPE) && MMTime.u.sample < MZK_NUMSAMPLES);
 
+    ChangeDisplaySettings(0, 0);    // 5 octets ? 
+    waveOutClose(hWaveOut); // waveOutClose //4091 
+    //ShowCursor(1);
+
 #ifndef CLEANDESTROY 
     ChangeDisplaySettings(0, 0);    // 5 octets ?
-    sndPlaySound(0, SND_NODEFAULT); // 9 octets
+    waveOutClose(hWaveOut); // waveOutReset
     ShowCursor(1);                  // 5 octets ?
 #endif
     ExitProcess(0);

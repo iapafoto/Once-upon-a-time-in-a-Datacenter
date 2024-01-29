@@ -66,7 +66,7 @@ void mzk_init(short* buffer) {
         y += p0d50*(p1d00 - sm) * (sinf(5.f * t + hash(t)) + beat(tb+p0d30) + p0d60 * beat(tb));
         float m = melody(tb) * sm;
 //        float k = .5f + .4f * cos(6.28f*tb);
-        float k = p0d60 - p0d60*fract(2.f*tb);
+        float k = p0d80 - p0d60*fract(2.f*tb);
         buffer[i*2] = f2i((y+k*m) * 1e3f);
         buffer[i*2+1] = f2i((y+m-k*m) * 1e3f);
     }
