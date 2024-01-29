@@ -5,7 +5,7 @@
 
 #ifdef WINDOWS
 
-
+#pragma	code_seg(".crtemui")
 int f2i(const float x) // use this to convert float to int, or use /QIfist as additional compiler parameters
 {
     int t;
@@ -14,6 +14,7 @@ int f2i(const float x) // use this to convert float to int, or use /QIfist as ad
     return t;
 }
 
+#pragma	code_seg(".crtemui")
 float mexpf(const float x)
 {
     float res;
@@ -31,6 +32,7 @@ float mexpf(const float x)
     _asm fstp    dword ptr[res]
         return res;
 }
+
 
 /*
 int f2i(float x) {
@@ -224,6 +226,99 @@ float msys_powf(const float x, const float y)
 
     return res;
 }
+
+
+
+
+//___sInUs___
+
+#pragma	code_seg(".crtemuf")
+float	ASMsinf(float i)
+{	__asm fld	i
+__asm fsin
+}
+
+//___cOsInUs___
+
+#pragma	code_seg(".crtemuf")
+float	ASMcosf(float i)
+{	__asm fld	i
+__asm fcos
+}
+
+//___rOUnd_flOAt_tO_IntEgEr___
+
+#pragma	code_seg(".crtemuf")
+int		ASMlrintf (float flt)
+{	int reti;
+__asm
+{
+fld		flt
+fistp	reti	// rounds ;)
+}
+return reti;
+}
+
+//___sqUArE_rOOt___
+
+#pragma code_seg(".crtemuf")
+float	ASMsqrtf(float i)
+{	__asm fld	i
+__asm fsqrt
+}
+
+//___mOdUlO_flOAt___
+
+#pragma code_seg(".crtemuf")
+float	ASMfmodf(float i, float j)
+{	__asm fld	j
+__asm fld	i
+__asm fprem
+__asm fxch
+__asm fstp	i
+}
+
+//___AbsOlUtE_flOAt___
+
+#pragma	code_seg(".crtemuf")
+float	ASMfabsf(float i)
+{	__asm fld	i
+__asm fabs
+}
+
+//___clEAr_mEmOry___
+
+#pragma	code_seg(".crtemui")
+void	ASMZeroMemory(void* dest, SIZE_T s)
+{	__asm mov edi, dest
+__asm xor eax, eax
+__asm mov ecx, s
+__asm rep stosb
+}
+
+//___cOpy_mEmOry___
+
+#pragma	code_seg(".crtemui")
+void	ASMCopyMemory(void* dest, void* souAe, SIZE_T s)
+{	__asm mov esi, souAe
+__asm mov edi, dest
+__asm mov ecx, s
+__asm rep movsb
+}
+
+//___rAndOm_nUmbEr_gEnErAtOr___
+
+#pragma	data_seg(".rand")
+int	RandSeed;
+
+#pragma code_seg(".crtemui")
+unsigned long random()
+{
+    RandSeed = (RandSeed * 196314165) + 907633515;
+    return RandSeed;
+}
+
+
 */
 
 

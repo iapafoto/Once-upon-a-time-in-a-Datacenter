@@ -2,6 +2,7 @@
 #ifndef SHADER_CODE_H_
 # define SHADER_CODE_H_
 
+#pragma data_seg
 const char* input =
 "#version 430\n"
 "layout(location=0) uniform float v;"
@@ -280,8 +281,8 @@ const char* input =
 "}"
 "void main()"
 "{"
-//"vec2 m=vec2(1280,720),"
-"vec2 m=vec2(1920,1080),"
+"vec2 m=vec2(1280,720),"
+//"vec2 m=vec2(1920,1080),"
 "f=gl_FragCoord.rg,g=(f+f-m)/m.g;"
 "f/=m;"
 "int[18] l=int[18](0,10,10,20,20,35,20,40,20,47,30,55,55,65,92,99,99,130);"
