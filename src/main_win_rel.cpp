@@ -4,20 +4,25 @@
 #define VC_EXTRALEAN
 
 #include <windows.h>
-#include "config.h"
 #include <GL/gl.h>
+#include <mmsystem.h>
+#include <mmreg.h>
+#include "config.h"
 #include "glext.h"
 #include "system.h"
 #include "fragment_shader.inl"
-#include <mmsystem.h>
-#include <mmreg.h>
 #include "mzk.h"
 
 
 static short myMuzik[MZK_NUMSAMPLESC];
-static HWAVEOUT	hWaveOut;
-static WAVEHDR WaveHDR = { (LPSTR)myMuzik, MZK_NUMSAMPLESC * sizeof(float), 0,0,0,0,0,0 };
 static MMTIME MMTime = { TIME_SAMPLES, 0 };
+static HWAVEOUT	hWaveOut;
+
+#pragma data_seg(".wavehdr")
+static WAVEHDR WaveHDR = { (LPSTR)myMuzik, MZK_NUMSAMPLESC * sizeof(float), 0,0,0,0,0,0 };
+
+
+#pragma data_seg(".wavefmt")
 static WAVEFORMATEX WaveFMT = {
 #ifdef FLOAT_32BIT	
     WAVE_FORMAT_IEEE_FLOAT,
@@ -32,12 +37,12 @@ static WAVEFORMATEX WaveFMT = {
     0 // extension not needed
 };
 
-
-
+#pragma data_seg(".pfd")
 static const PIXELFORMATDESCRIPTOR pfd = {
     sizeof(PIXELFORMATDESCRIPTOR), 1, PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER, PFD_TYPE_RGBA,
     32, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 32, 0, 0, PFD_MAIN_PLANE, 0, 0, 0, 0 };
 
+#pragma data_seg(".devmode")
 static DEVMODE screenSettings = { {0},
     #if _MSC_VER < 1400
     0,0,148,0,0x001c0000,{0},0,0,0,0,0,0,0,0,0,{0},0,32,XRES,YRES,0,0,      // Visual C++ 6.0
@@ -72,6 +77,7 @@ void render() { //4032
     wglSwapLayerBuffers(hDC, WGL_SWAP_MAIN_PLANE); // SwapBuffers(hDC); => +2 octets
 }
 
+#pragma code_seg(".entry")
 void entrypoint(void)
 {
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
@@ -110,14 +116,10 @@ void entrypoint(void)
 
     } while (!GetAsyncKeyState(VK_ESCAPE) && MMTime.u.sample < MZK_NUMSAMPLES);
 
-    ChangeDisplaySettings(0, 0);    // 5 octets ? 
-    waveOutClose(hWaveOut); // waveOutClose //4091 
-    //ShowCursor(1);
-
-#ifndef CLEANDESTROY 
+#ifdef CLEANDESTROY 
     ChangeDisplaySettings(0, 0);    // 5 octets ?
     waveOutClose(hWaveOut); // waveOutReset
-    ShowCursor(1);                  // 5 octets ?
+   // ShowCursor(1);                  // 5 octets ?
 #endif
     ExitProcess(0);
 }

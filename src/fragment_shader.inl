@@ -2,7 +2,7 @@
 #ifndef SHADER_CODE_H_
 # define SHADER_CODE_H_
 
-#pragma data_seg
+#pragma data_seg(".shader")
 const char* input =
 "#version 430\n"
 "layout(location=0) uniform float v;"
@@ -281,13 +281,19 @@ const char* input =
 "}"
 "void main()"
 "{"
+#if RES==1
+"vec2 m=vec2(1920,1080),"
+#elif RES==2
+"vec2 m=vec2(2560,1440),"
+#else
 "vec2 m=vec2(1280,720),"
-//"vec2 m=vec2(1920,1080),"
+#endif
+//
 "f=gl_FragCoord.rg,g=(f+f-m)/m.g;"
 "f/=m;"
 "int[18] l=int[18](0,10,10,20,20,35,20,40,20,47,30,55,55,65,92,99,99,130);"
 "int[30] c=int[30](95,8,80,95,6,-7,110,13,-5,92,15,-8,94,17,2,8,5,8,-10,24,4,-23,24,9,-4,25,7,140,4,4),b=int[30](80,6,28,80,5,-7,113,9,-12,90,15,-5,92,17,8,0,6,5,-16,22,5,-20,21,5,-10,23,7,135,3,9);"
-"float a,i=3.;"
+"float a,i=8.;"
 "vec3 t,C,o=vec3(c[0],c[1],c[2]),p=vec3(b[0],b[1],b[2]);"
 "for(int D=0;++D<10;)"
 "a=smoothstep(float(l[D*2-2]),float(l[D*2-1]),v),o=mix(o,vec3(c[D*3],c[D*3+1],c[D*3+2]),a),p=mix(p,vec3(b[D*3],b[D*3+1],b[D*3+2]),a);"
@@ -300,7 +306,7 @@ const char* input =
 "a=50.;"
 "C=d(o,p,a);"
 "if(p.r!=0.)"
-"C+=a*.2*d(o,p,i);"
+"C+=a*.1*d(o,p,i);"
 "a=smoothstep(0.,7.,v-125.);"
 "r=v==0.?"
 "vec4(1&int[](0,~0,124,3236969472,4160487169,~0,0,2199966623,~0,2031632,0)[min(int(length(g*20.)),10)]>>int(5.*atan(g.g,g.r))):"

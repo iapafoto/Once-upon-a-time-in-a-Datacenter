@@ -44,16 +44,12 @@ float beat(const float time) {
     float a = sinf(691.15f * mexpf(-4.f * t) * t);
     float h = mexpf(-t);
     return clamp(a*8.f, -1.f) * (mexpf(-10.f * t) + h) + a*10.f*h; 
-   // return v;// +.8f * a * mexpf(-3.f * t - p0d50);  // 4076
 }
 
 float melody(const float t) {
-   // float im = 10.f + 9.f * sinf(1.57079f * t);
-       // float v = sinf(6.2831f * f * time + im * ksinf(1.57079f * f * time, ramp((time-95.f)/30.f)));
     const float v = sinf(2764.564f * t + (10.f + 9.f * sinf(1.57079f * t)) * ksinf(691.1476f * t, ramp((t - 96.f) / 30.f)));
     return v * mexpf(-2.f * fract(8.f * t));;
 }
-
 
 void mzk_init(short* buffer) {
     for (int i = 0; i < MZK_NUMSAMPLES; i++) {
