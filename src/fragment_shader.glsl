@@ -40,8 +40,7 @@ float tex3D(vec3 p,vec3 n,int i) {
   n/=n.x+n.y+n.z;
   return fbm(p.yz)*n.x+fbm(p.zx)*n.y+fbm(p.xy)*n.z;
 }
-void doBumpMap(inout vec3 n,vec3 p)
-{
+void doBumpMap(inout vec3 n,vec3 p) {
   p=(vec3(tex3D(p,n,0),tex3D(p,n,1),tex3D(p,n,2))-tex3D(p,n,3))/.002;
   n=normalize(n+(p-n*dot(n,p))*.2);
 }
@@ -76,8 +75,7 @@ float txInvader(vec2 v)
     1.:
     1.5;
 }
-void sdBezier(inout vec2 r,vec3 p,vec3 b0,vec3 b1,vec3 b2)
-{
+void sdBezier(inout vec2 r,vec3 p,vec3 b0,vec3 b1,vec3 b2) {
   b0-=p;
   b1-=p;
   b2-=p;
@@ -89,6 +87,7 @@ void sdBezier(inout vec2 r,vec3 p,vec3 b0,vec3 b1,vec3 b2)
     50:
     25));
 }
+
 vec2 sdRobot(vec3 p0,float b)
 {
   float d=length(p0),k2=smoothstep(91.,1e2,iTime),k=smoothstep(68.,72.,iTime);
