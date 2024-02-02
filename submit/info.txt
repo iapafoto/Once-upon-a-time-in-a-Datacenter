@@ -23,7 +23,8 @@ Based on:
 * 4k intro framework by iq/Rgba
 ------------------------------------------------
     Many thanks to iq, mercury for sdf tools
-          and to Shadertoy community
+          Fabrice Neyret, Shane, Iq
+          and all Shadertoy community
 ================================================
      _                    __       _        
     (_) __ _ _ __   __ _ / _| ___ | |_ ___  
