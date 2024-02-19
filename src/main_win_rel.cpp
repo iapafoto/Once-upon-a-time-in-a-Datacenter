@@ -81,7 +81,9 @@ void render() { //4032
 void entrypoint(void)
 {
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
+#ifdef FULLSCREEN
     ChangeDisplaySettings(&screenSettings, CDS_FULLSCREEN); // 20 octets a peu pres
+#endif
     ShowCursor(0); // 5 octets
     hDC = GetDC(CreateWindow((LPCSTR)0xC018, 0, WS_POPUP | WS_VISIBLE, 0, 0, XRES, YRES, 0, 0, 0, 0));
     SetPixelFormat(hDC, ChoosePixelFormat(hDC, &pfd), &pfd);
@@ -112,13 +114,13 @@ void entrypoint(void)
     do {
         waveOutGetPosition(hWaveOut, &MMTime, sizeof(MMTIME));
         render();
-        PeekMessage(0,0,0,0,PM_REMOVE); // increase compatibility 3 octets
+ //       PeekMessage(0,0,0,0,PM_REMOVE); // increase compatibility 3 octets
 
     } while (!GetAsyncKeyState(VK_ESCAPE) && MMTime.u.sample < MZK_NUMSAMPLES);
 
-#ifdef CLEANDESTROY 
+#ifdef CLEANDESTROY  //4111 sans clean  4112 avec 
     ChangeDisplaySettings(0, 0);    // 5 octets ?
-    waveOutClose(hWaveOut); // waveOutReset
+ //   waveOutClose(hWaveOut); // waveOutReset
    // ShowCursor(1);                  // 5 octets ?
 #endif
     ExitProcess(0);
