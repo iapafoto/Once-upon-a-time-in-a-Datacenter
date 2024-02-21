@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#define RES 0 // 0:1280, 1:1920, 2:2560
+#define RES 1 // 0:1280, 1:1920, 2:2560
 
 #if RES==1
 	#define XRES 1920
