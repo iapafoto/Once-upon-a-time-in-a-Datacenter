@@ -114,13 +114,13 @@ void entrypoint(void)
     do {
         waveOutGetPosition(hWaveOut, &MMTime, sizeof(MMTIME));
         render();
-//        PeekMessage(0,0,0,0,PM_REMOVE); // increase compatibility 3 à 8 octets
+        PeekMessage(0,0,0,0,PM_REMOVE); // increase compatibility 3 à 8 octets
 
     } while (!GetAsyncKeyState(VK_ESCAPE) && MMTime.u.sample < MZK_NUMSAMPLES);
 
 #ifdef CLEANDESTROY  //4111 sans clean  4112 avec 
- //   ChangeDisplaySettings(0, 0);    // 5 octets ?
- //   waveOutClose(hWaveOut); // waveOutReset
+    ChangeDisplaySettings(0, 0);    // 5 octets ?
+    waveOutClose(hWaveOut); // waveOutReset
    // ShowCursor(1);                  // 5 octets ?
 #endif
     ExitProcess(0);
