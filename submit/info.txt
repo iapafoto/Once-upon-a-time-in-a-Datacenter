@@ -5,13 +5,11 @@
                                   By iapafoto
 ------------------------------------------------
 
-Tools: Shadertoy, Shader Minifier, Crinkler 
-
 Short allegory on singularity
 
 ------------------------------------------------
-   4Kb Executable Intro                [134s]
-   Windows / OpenGL
+   4Kb Executable Intro                [144s]
+   Windows10 / OpenGL
 ------------------------------------------------
           Released at Revision 2024
 ================================================
