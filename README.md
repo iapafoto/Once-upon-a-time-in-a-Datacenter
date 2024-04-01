@@ -9,4 +9,10 @@ once_upon_a_time_in_a_datacenter_1920x1080.jpg
 
 # Video Revision2024
 
-[https://www.youtube.com/watch?v=kPk2XT6VtGk](https://www.youtube.com/watch?v=_CXvNfu4vHM&t=2000s&ab_channel=RevisionDemoparty)
+[Revision2024](https://www.youtube.com/watch?v=_CXvNfu4vHM&t=2000s&ab_channel=RevisionDemoparty)
+
+# Links
+
+[Pouet.net](https://www.pouet.net/prod.php?which=96550)
+[DemoZoo](https://demozoo.org/productions/342199/)
+[Shadertoy](https://www.shadertoy.com/view/XccGz2)
