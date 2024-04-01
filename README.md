@@ -1,7 +1,9 @@
 # Once upon a time in a Datacenter
 
-*PC 4K Intro*
+**PC 4K Intro**
+
 Released at **Revision 2024** 
+
 *Rank: 6th/17*
 
 ![Alt text](https://raw.githubusercontent.com/iapafoto/Once-upon-a-time-in-a-Datacenter/master/submit/once_upon_a_time_in_a_datacenter_1920x1080.jpg)
