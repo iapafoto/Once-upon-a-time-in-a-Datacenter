@@ -1,8 +1,8 @@
 # Once upon a time in a Datacenter
 
 PC 4K Intro
-Released at Revision2024 (6th / 16)
-https://www.pouet.net/prod.php?which=96550
+Released at *Revision2024* 
+Rank: 6th/17
 
 once_upon_a_time_in_a_datacenter_1920x1080.jpg
 ![Alt text](https://raw.githubusercontent.com/iapafoto/Once-upon-a-time-in-a-Datacenter/master/submit/once_upon_a_time_in_a_datacenter_1920x1080.jpg)
